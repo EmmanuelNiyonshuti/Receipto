@@ -1,5 +1,7 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
+import crypto from 'crypto';
+
 
 const DB_HOST = process.env.DB_HOST;
 const DB_PORT = process.env.DB_PORT;
@@ -28,6 +30,14 @@ class DBClient {
         return this.connected;
     }
 
+    hashPw(pwd){
+        const hash = crypto.createHash('sha256').update(pwd).digest('hex');
+        return hash;
+    }
+    checkPw(pwd, hashedPw){
+        const hash = this.hashPw(pwd);
+        return hash === hashedPw;
+    }
     async nbUsers(){
         if (!this.isAlive()){
             return;
@@ -36,13 +46,30 @@ class DBClient {
         return numUsers;
     }
     async nbReceipts(){
-        if (!this.isAlive()){
-            return;
-        }
+        if (!this.isAlive()) return;
+
         const numDocuments = await this.db.collection('users').countDocuments();
         return numDocuments;   
     }
+    async findUserByEmail(email){
+        if (!this.isAlive()) return;
+        const user = await this.db.collection('users').findOne({ email: email });
+        return user ? user : null;
+    }
+    async createUser(username, email, password){
+        if (!this.isAlive()) return;
+        try{
+            const user = await this.findUserByEmail(email);
+            if (user) return {'error': `user with ${email} already exists, please use another email`};
+            const hashedPw = this.hashPw(password);
+            const newUser = { username, email, hashedPw};
+            await this.db.collection('users').insertOne(newUser);
+            return newUser;
+        }catch(error){
+            return { 'error': error };
+        }
+    }
 }
 
-const dbClient = new DBClient();
+const dbClient = new DBClient()
 export default dbClient;

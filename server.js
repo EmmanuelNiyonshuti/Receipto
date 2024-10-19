@@ -8,6 +8,8 @@ const app = express();
 
 // middlewares
 app.use(logger);
+
+app.use(express.json());
 app.use("/api", router);
 
 app.listen(port, () => {
