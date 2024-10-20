@@ -48,7 +48,7 @@ class DBClient {
     async nbReceipts(){
         if (!this.isAlive()) return;
 
-        const numDocuments = await this.db.collection('users').countDocuments();
+        const numDocuments = await this.db.collection('receipts').countDocuments();
         return numDocuments;   
     }
     async findUserByEmail(email){
