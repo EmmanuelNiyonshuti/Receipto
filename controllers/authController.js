@@ -1,16 +1,21 @@
+/**
+ * @desc User authentication management controller
+ * @route POST /api/users/register
+ * @route POST /api/users/login
+ */
 import dbClient from '../utils/db.js';
 import { validationResult } from 'express-validator';
-import { generateAccessToken, verifyAccessToken } from '../utils/jwt.js';
+import { generateAccessToken } from '../utils/jwt.js';
 
 class authController{
     static async createUser(req, res, next) {
+        const { username, email, password } = req.body;
         const errors = validationResult(req);
         if (!errors.isEmpty()){
-            const error = new Error(errors.array());
+            const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);
             error.status = 400;
             return next(error);
         }
-        const { username, email, password } = req.body;
         try{
             const newUser = await dbClient.createUser(username, email, password);
             if (newUser.error){
@@ -32,7 +37,7 @@ class authController{
     static async userLogin(req, res, next){
         const errors = validationResult(req);
         if (!errors.isEmpty()){
-            const error = new Error(errors.array());
+            const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);
             error.status = 400;
             return next(error);
         }
@@ -49,7 +54,7 @@ class authController{
             return next(error);
         }
         const token = generateAccessToken(email);
-        res.status(200).json(token);
+        res.status(200).json({ token: token });
     }
 }
 

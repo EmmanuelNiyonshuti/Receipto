@@ -1,7 +1,10 @@
-
+/**
+ * @desc  User management controller.
+ * @route GET /api/users/profile
+ */
 
 class userController{
-    static getMe(req, res){
+    static getUser(req, res){
         const user = req.user;
         return res.status(200).json({
             id: user._id,

@@ -1,3 +1,5 @@
+// @api status controller
+
 import dbClient from "../utils/db.js";
 
 class appController {

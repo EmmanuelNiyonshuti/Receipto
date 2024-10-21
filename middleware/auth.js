@@ -6,13 +6,20 @@ import { verifyAccessToken } from "../utils/jwt.js";
 export const authUser = async (req, res, next) => {
     try{
         const authHeader = req.headers.authorization;
-        if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+        if (!authHeader){
+            const error = new Error(' Missing authorization header');
+            error.status = 400;
+            return next(error);
+        }
         const token = authHeader.split(' ')[1];
-        if (!token) return res.status(401).json({ error: 'Unauthorized' });
         const decoded = verifyAccessToken(token);
-        if (!decoded) return res.status(401).json({error: 'Unauthorized'});
         const userEmail = decoded.email;
         const user = await dbClient.findUserByEmail(userEmail);
+        if (!user){
+            const error = new Error('User not found');
+            error.status = 404;
+            return next(error);
+        }
         req.user = user;
         next();
     }catch(error){
