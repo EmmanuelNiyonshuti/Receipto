@@ -1,5 +1,5 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import crypto from 'crypto';
 
 
@@ -45,12 +45,12 @@ class DBClient {
         const numUsers = await this.db.collection('users').countDocuments();
         return numUsers;
     }
-    async nbReceipts(){
-        if (!this.isAlive()) return;
+    // async nbReceipts(){
+    //     if (!this.isAlive()) return;
 
-        const numDocuments = await this.db.collection('receipts').countDocuments();
-        return numDocuments;   
-    }
+    //     const numDocuments = await this.db.collection('receipts').countDocuments();
+    //     return numDocuments;   
+    // }
     async findUserByEmail(email){
         if (!this.isAlive()) return;
         const user = await this.db.collection('users').findOne({ email: email });
@@ -65,6 +65,20 @@ class DBClient {
             const newUser = { username, email, hashedPw};
             await this.db.collection('users').insertOne(newUser);
             return newUser;
+        }catch(error){
+            return { 'error': error };
+        }
+    }
+    async updateUserReceipts(user, newReceipt){
+        if (!this.isAlive()) return;
+        try{
+            if (!user.receipts)
+                user.receipts = [];
+            const updatedUser = await this.db.collection('users').updateOne(
+                { _id: user._id },
+                { $push: { receipts: newReceipt } }
+            );
+            return updatedUser;
         }catch(error){
             return { 'error': error };
         }

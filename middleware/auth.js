@@ -15,11 +15,6 @@ export const authUser = async (req, res, next) => {
         const decoded = verifyAccessToken(token);
         const userEmail = decoded.email;
         const user = await dbClient.findUserByEmail(userEmail);
-        if (!user){
-            const error = new Error('User not found');
-            error.status = 404;
-            return next(error);
-        }
         req.user = user;
         next();
     }catch(error){
@@ -31,6 +26,11 @@ export const authUser = async (req, res, next) => {
         else if (error instanceof jwt.TokenExpiredError){
             const error = new Error('Unauthorized. Token expired');
             error.status = 401;
+            return next(error);
+        }
+        else{
+            const error = new Error('Internal server error');
+            error.status = 500;
             return next(error);
         }
     }
