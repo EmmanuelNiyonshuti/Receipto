@@ -7,7 +7,7 @@ import dbClient from '../utils/db.js';
 import { validationResult } from 'express-validator';
 import { generateAccessToken } from '../utils/jwt.js';
 
-class authController{
+class AuthController{
     static async createUser(req, res, next) {
         const { username, email, password } = req.body;
         const errors = validationResult(req);
@@ -42,6 +42,7 @@ class authController{
             return next(error);
         }
         const { email, password } = req.body;
+        console.log(email, password);
         const user = await dbClient.findUserByEmail(email);
         if (!user){
             const error = new Error('Invalid credentials')
@@ -58,4 +59,4 @@ class authController{
     }
 }
 
-export default authController;
+export default AuthController;

@@ -1,24 +1,24 @@
 import express from 'express';
-import appController from '../controllers/appController.js';
-import authController from '../controllers/authController.js';
+import AppController from '../controllers/appController.js';
+import AuthController from '../controllers/authController.js';
 import validateUser from '../middleware/validateUser.js';
-import userController from '../controllers/userController.js';
+import UserController from '../controllers/userController.js';
 import { authUser } from '../middleware/auth.js';
-import receiptsController from '../controllers/receiptsController.js';
-import multer from "multer";
+import { ReceiptsController } from '../controllers/receiptsController.js';
+import { upload } from '../middleware/receiptsUpload.js';
+
 
 const router = express.Router();
 
-
 // api status
-router.get('/status', appController.getStatus);
-router.get('/stats', appController.getStats);
+router.get('/status', AppController.getStatus);
+router.get('/stats', AppController.getStats);
 // user authentication
-router.post('/users/register', validateUser, authController.createUser);
-router.post('/users/login', authController.userLogin);
-router.get('/users/profile', authUser, userController.getUser);
+router.post('/users/register', validateUser, AuthController.createUser);
+router.post('/users/login', AuthController.userLogin);
+router.get('/users/profile', authUser, UserController.getUser);
 
 // receipts management
-router.post('/receipts', receiptsController.createReceipt);
+router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceipt);
 
 export default router;

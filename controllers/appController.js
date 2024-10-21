@@ -2,12 +2,10 @@
 
 import dbClient from "../utils/db.js";
 
-class appController {
+class AppController {
     static getStatus(req, res, next){
         if (dbClient.isAlive()){
-            return res.status(200).json({
-                                        msg: 'Ok'
-                                    });
+            return res.status(200).json({ msg: 'Ok' });
         }
         const error = new Error('something went wrong');
         error.status = 500;
@@ -20,4 +18,4 @@ class appController {
     }
 }
 
-export default appController;
+export default AppController;
