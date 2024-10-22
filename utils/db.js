@@ -1,13 +1,15 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
 import { MongoClient, ObjectId } from 'mongodb';
 import crypto from 'crypto';
+import path from 'path';
+import url from 'url';
 
 
 const DB_HOST = process.env.DB_HOST;
 const DB_PORT = process.env.DB_PORT;
 const DB_NAME = process.env.DB_NAME;
 
-const url = `mongodb://${DB_HOST}:${DB_PORT}`;
+const Url = `mongodb://${DB_HOST}:${DB_PORT}`;
 
 class DBClient {
     constructor() {
@@ -18,7 +20,7 @@ class DBClient {
     }
     async connect() {
         try{
-            this.client = await MongoClient.connect(url);
+            this.client = await MongoClient.connect(Url);
             this.db = this.client.db(DB_NAME);
             this.connected = true;
         }catch(error){
@@ -65,12 +67,13 @@ class DBClient {
     async createReceipt(user, file){
         if (!this.isAlive()) return;
         try{
+            const relativePath = path.join('uploads', file.filename);
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
                 filename: file.filename,
                 uploadDate: new Date().toISOString(),
-                fileUrl: `./uploads/${file.filename}`,
-                metadata: {} 
+                fileUrl: relativePath,
+                metadata: {}
             });
             return newReceipt;
         }catch(error){

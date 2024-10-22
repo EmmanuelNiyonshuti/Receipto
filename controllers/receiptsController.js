@@ -3,6 +3,7 @@
  * @route POST /api/receipts
  */
 import dbClient from '../utils/db.js';
+import fs from 'fs';
 
 export class ReceiptsController {
     static async createReceipt(req, res) {
@@ -10,7 +11,6 @@ export class ReceiptsController {
         if (!req.files || req.files.length == 0)
             return res.status(400).json({ error: 'No file uploaded'});
         const file = req.files[0];
-        // const updateUser = await dbClient.updateUserReceipts(user, newReceipt);
         const newReceipt = await dbClient.createReceipt(user, file);
         if (newReceipt.error)
             return res.status(500).json({ msg: `Failed to upload the receipt, ${newReceipt.error}`});
@@ -28,8 +28,17 @@ export class ReceiptsController {
         const user = req.user;
         const receiptId = req.params.id;
         const receipt = await dbClient.findUserReceipt(user, receiptId);
-        if (!receipt)
+        if (!receipt || receipt.length === 0)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
-        return res.status(200).json(receipt);
+        const filePath = receipt[0].fileUrl;
+        try {
+            await fs.promises.access(filePath, fs.constants.F_OK);
+        } catch (error){
+            return res.status(404).json({ error: `File not found, ${error}` });
+        }
+        return res.download(filePath, receipt[0].filename, (error) => {
+            if (error && !res.headersSent)
+                return res.status(500).json({error: `Internal Server Error, ${error}`});
+        });
     }
 }
