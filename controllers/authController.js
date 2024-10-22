@@ -42,7 +42,6 @@ class AuthController{
             return next(error);
         }
         const { email, password } = req.body;
-        console.log(email, password);
         const user = await dbClient.findUserByEmail(email);
         if (!user){
             const error = new Error('Invalid credentials')

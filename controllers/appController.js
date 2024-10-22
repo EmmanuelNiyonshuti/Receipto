@@ -12,9 +12,12 @@ class AppController {
         return next(error);
     }
     static async getStats(req, res) {
-        const users = await dbClient.nbUsers();
-        const receipts = await dbClient.nbReceipts();
-        res.status(200).json({users: users, receipts: receipts});
+        const user = req.user;
+        res.status(200).json({
+                    id: user._id,
+                    username: user.username,
+                    receipts: user.receipts.length
+                });
     }
 }
 

@@ -12,7 +12,7 @@ const router = express.Router();
 
 // api status
 router.get('/status', AppController.getStatus);
-router.get('/stats', AppController.getStats);
+router.get('/stats', authUser, AppController.getStats);
 // user authentication
 router.post('/users/register', validateUser, AuthController.createUser);
 router.post('/users/login', AuthController.userLogin);
@@ -20,5 +20,7 @@ router.get('/users/profile', authUser, UserController.getUser);
 
 // receipts management
 router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceipt);
+router.get('/receipts', authUser, ReceiptsController.getUserReceipts);
+router.get('/receipts/:id', authUser, ReceiptsController.getSingleReceipt);
 
 export default router;

@@ -29,7 +29,6 @@ class DBClient {
     isAlive(){
         return this.connected;
     }
-
     hashPw(pwd){
         const hash = crypto.createHash('sha256').update(pwd).digest('hex');
         return hash;
@@ -45,12 +44,6 @@ class DBClient {
         const numUsers = await this.db.collection('users').countDocuments();
         return numUsers;
     }
-    // async nbReceipts(){
-    //     if (!this.isAlive()) return;
-
-    //     const numDocuments = await this.db.collection('receipts').countDocuments();
-    //     return numDocuments;   
-    // }
     async findUserByEmail(email){
         if (!this.isAlive()) return;
         const user = await this.db.collection('users').findOne({ email: email });
@@ -69,21 +62,37 @@ class DBClient {
             return { 'error': error };
         }
     }
-    async updateUserReceipts(user, newReceipt){
+    async createReceipt(user, file){
         if (!this.isAlive()) return;
         try{
-            if (!user.receipts)
-                user.receipts = [];
-            const updatedUser = await this.db.collection('users').updateOne(
-                { _id: user._id },
-                { $push: { receipts: newReceipt } }
-            );
-            return updatedUser;
+            const newReceipt = await this.db.collection('receipts').insertOne({
+                userId: user._id,
+                filename: file.filename,
+                uploadDate: new Date().toISOString(),
+                fileUrl: `./uploads/${file.filename}`,
+                metadata: {} 
+            });
+            return newReceipt;
         }catch(error){
-            return { 'error': error };
+            return {'error': error }
         }
+    }
+    async allReceipts(){
+        if (!this.isAlive()) return;
+        const receipts = await this.db.collection('receipts').find().toArray();
+        return receipts;
+    }
+    async findUserReceipts(user){
+        if (!this.isAlive()) return;
+        const receipts = await this.allReceipts();
+        return receipts.filter(receipt => receipt.userId == user._id.toString());
+    }
+    async findUserReceipt(user, receiptId) {
+        if (!this.isAlive()) return;
+        const userReceipts = await this.findUserReceipts(user);
+        return userReceipts.filter(receipt => receipt._id == receiptId);
     }
 }
 
-const dbClient = new DBClient()
+const dbClient = new DBClient();
 export default dbClient;
