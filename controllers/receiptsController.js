@@ -69,4 +69,19 @@ export class ReceiptsController {
         await dbClient.deleteReceipt(user);
         return res.status(200).json({});
     }
+    static async updateReceipt(req, res){
+        const user = req.user;
+        const receiptId = req.params.id;
+        const receipt = await dbClient.findUserReceipt(user, receiptId);
+        if (!receipt || receipt.length === 0)
+            return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
+        const updateData = req.body;
+        const updatedReceipt = await dbClient.updateReceipt(user, receiptId, updateData);
+        if (updatedReceipt && updatedReceipt.error)
+            return res.status(500).json({ error: `Failed to update receipt, ${updatedReceipt.error}`});
+        return res.status(200).json({
+            msg: 'Receipt updated successfully',
+            updatedReceipt: updatedReceipt
+        });
+    }
 }

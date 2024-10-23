@@ -1,5 +1,5 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
 import path from 'path';
 import url from 'url';
@@ -111,6 +111,21 @@ class DBClient {
             return {};
         }catch(error){
             return {'error': error};
+        }
+    }
+    async updateReceipt(user, receiptId, updateData){
+        if (!this.isAlive()) return;
+        try{
+            const updatedAt = {updatedAt: new Date().toISOString()};
+            const updated = await this.db.collection('receipts').findOneAndUpdate(
+                { _id: ObjectId.createFromHexString(receiptId), userId: user._id },
+                { $set: updateData },
+                { $set: updatedAt },
+                { ReturnDocument: 'after' }
+            );
+            return updated.value;
+        }catch(error) {
+            return { 'error': error.message };
         }
     }
 }

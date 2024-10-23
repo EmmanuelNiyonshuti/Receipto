@@ -21,8 +21,9 @@ router.get('/users/profile', authUser, UserController.getUser);
 // receipts management
 router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceipt);
 router.get('/receipts', authUser, ReceiptsController.getUserReceipts);
-router.get('/receipts/:category', authUser, ReceiptsController.getReceiptByCategory);
+router.get('/receipts/category/:category', authUser, ReceiptsController.getReceiptByCategory);
 router.get('/receipts/:id', authUser, ReceiptsController.getSingleReceipt);
+router.put('/receipts/:id', authUser, ReceiptsController.updateReceipt);
 router.delete('/receipts/:id', authUser, ReceiptsController.deleteReceipt);
 
 export default router;
