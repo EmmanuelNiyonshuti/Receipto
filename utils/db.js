@@ -64,20 +64,24 @@ class DBClient {
             return { 'error': error };
         }
     }
-    async createReceipt(user, file){
+    async createReceipt(user, receiptCategory, file){
         if (!this.isAlive()) return;
         try{
             const relativePath = path.join('uploads', file.filename);
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
+                category: receiptCategory,
                 filename: file.filename,
                 uploadDate: new Date().toISOString(),
                 fileUrl: relativePath,
-                metadata: {}
+                metadata: {
+                    size: file.size,
+                    type: file.mimetype
+                }
             });
             return newReceipt;
         }catch(error){
-            return {'error': error }
+            return {'error': error };
         }
     }
     async allReceipts(){
@@ -94,6 +98,20 @@ class DBClient {
         if (!this.isAlive()) return;
         const userReceipts = await this.findUserReceipts(user);
         return userReceipts.filter(receipt => receipt._id == receiptId);
+    }
+    async findReceiptByCategory(user, category){
+        if (!this.isAlive()) return;
+        const receipt = await this.db.collection('receipts').find({ userId: user._id, category: category }).toArray();
+        return receipt;
+    }
+    async deleteReceipt(user){
+        if (!this.isAlive()) return;
+        try{
+            const d = await this.db.collection('receipts').deleteOne({ userId: user._id });
+            return {};
+        }catch(error){
+            return {'error': error};
+        }
     }
 }
 
