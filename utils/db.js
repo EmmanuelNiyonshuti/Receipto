@@ -39,18 +39,6 @@ class DBClient {
         const hash = this.hashPw(pwd);
         return hash === hashedPw;
     }
-    async nbUsers(){
-        if (!this.isAlive()){
-            return;
-        }
-        const numUsers = await this.db.collection('users').countDocuments();
-        return numUsers;
-    }
-    async findUserByEmail(email){
-        if (!this.isAlive()) return;
-        const user = await this.db.collection('users').findOne({ email: email });
-        return user ? user : null;
-    }
     async createUser(username, email, password){
         if (!this.isAlive()) return;
         try{
@@ -63,6 +51,11 @@ class DBClient {
         }catch(error){
             return { 'error': error };
         }
+    }
+    async findUserByEmail(email){
+        if (!this.isAlive()) return;
+        const user = await this.db.collection('users').findOne({ email: email });
+        return user ? user : null;
     }
     async createReceipt(user, receiptCategory, file){
         if (!this.isAlive()) return;

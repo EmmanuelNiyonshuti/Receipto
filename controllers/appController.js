@@ -12,11 +12,11 @@ class AppController {
         return next(error);
     }
     static async getStats(req, res) {
-        const user = req.user;
+        const nbUsers = await dbClient.db.collection('users').countDocuments();
+        const nbReceipts = await dbClient.db.collection('receipts').countDocuments();
         res.status(200).json({
-                    id: user._id,
-                    username: user.username,
-                    receipts: user.receipts.length
+                    users: nbUsers,
+                    receipts: nbReceipts
                 });
     }
 }

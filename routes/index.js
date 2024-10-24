@@ -12,11 +12,14 @@ const router = express.Router();
 
 // api status
 router.get('/status', AppController.getStatus);
-router.get('/stats', authUser, AppController.getStats);
+router.get('/stats', AppController.getStats);
 // user authentication
 router.post('/users/register', validateUser, AuthController.createUser);
 router.post('/users/login', AuthController.userLogin);
 router.get('/users/profile', authUser, UserController.getUser);
+
+router.put('/users/:id', authUser, UserController.updateUser);
+router.delete('/users/:id', authUser, UserController.deleteUser);
 
 // receipts management
 router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceipt);

@@ -10,6 +10,9 @@ import { generateAccessToken } from '../utils/jwt.js';
 class AuthController{
     static async createUser(req, res, next) {
         const { username, email, password } = req.body;
+        if (email == undefined){
+            const error = new Error('');
+        }
         const errors = validationResult(req);
         if (!errors.isEmpty()){
             const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);
@@ -44,8 +47,8 @@ class AuthController{
         const { email, password } = req.body;
         const user = await dbClient.findUserByEmail(email);
         if (!user){
-            const error = new Error('Invalid credentials')
-            error.status = 401;
+            const error = new Error('user not found');
+            error.status = 404;
             return next(error);
         }
         if (!dbClient.checkPw(password, user.password)){
@@ -53,7 +56,7 @@ class AuthController{
             error.status = 401;
             return next(error);
         }
-        const token = generateAccessToken(email);
+        const token = generateAccessToken(user._id, email);
         res.status(200).json({ token: token });
     }
 }
