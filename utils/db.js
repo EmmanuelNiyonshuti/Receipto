@@ -62,11 +62,10 @@ class DBClient {
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
                 folder: newFile.asset_folder || 'Receipts',
-                type: newFile.type,
                 format: newFile.format,
                 category: receiptCategory,
                 fileUrl: newFile.secure_url,
-                fileName: newFile.original_name,
+                fileName: newFile.secure_url.split('/').pop(),
                 metadata: {
                     size: file.size,
                     type: file.mimetype,
@@ -98,15 +97,6 @@ class DBClient {
         const receipt = await this.db.collection('receipts').find({ userId: user._id, category: category }).toArray();
         return receipt;
     }
-    async deleteReceipt(user){
-        if (!this.isAlive()) return;
-        try{
-            const d = await this.db.collection('receipts').deleteOne({ userId: user._id });
-            return {};
-        }catch(error){
-            return {'error': error};
-        }
-    }
     async updateReceipt(user, receiptId, updateData){
         if (!this.isAlive()) return;
         try{
@@ -117,9 +107,17 @@ class DBClient {
                 { $set: updatedAt },
                 { ReturnDocument: 'after' }
             );
-            return updated.value;
+            return updated;
         }catch(error) {
             return { 'error': error.message };
+        }
+    }
+    async deleteReceipt(receiptId) {
+        if (!this.isAlive()) return;
+        try{
+            await this.db.collection('receipts').deleteOne({ _id: ObjectId.createFromHexString(receiptId) });
+        }catch(error){
+            return {'error': error};
         }
     }
 }

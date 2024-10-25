@@ -3,19 +3,17 @@
  * @route POST /api/receipts
  */
 import dbClient from '../utils/db.js';
-import fs from 'fs';
 import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
-import request from 'request';
 import axios from 'axios';
 
 export class ReceiptsController {
     static async createReceipt(req, res) {
         const user = req.user;
+        const receiptCategory = req.query.category;
+        if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
         if (!req.files || req.files.length == 0)
             return res.status(400).json({ error: 'No file uploaded' });
         const file = req.files[0];
-        const receiptCategory = req.query.category;
-        if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
         try{
             const newFile = await uploadReceiptToCloudinary(file.buffer);
             if (!newFile || !newFile.url){
@@ -60,21 +58,12 @@ export class ReceiptsController {
         return res.status(200).json({
             message: `found ${receipts.length} receipts in ${category} category.`,
             receipt: receipts.map(receipt => ({
-                filename: receipt.filename,
+                filename: receipt.fileName,
                 uploadDate: receipt.uploadDate,
                 filePath: receipt.fileUrl,
                 metadata: receipt.metadata
             }))
         });
-    }
-    static async deleteReceipt(req, res){
-        const user = req.user;
-        const receiptId = req.params.id;
-        const receipt = await dbClient.findUserReceipt(user, receiptId);
-        if (!receipt || receipt.length === 0)
-            return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
-        await dbClient.deleteReceipt(user);
-        return res.status(200).json({});
     }
     static async updateReceipt(req, res){
         const user = req.user;
@@ -90,5 +79,18 @@ export class ReceiptsController {
             msg: 'Receipt updated successfully',
             updatedReceipt: updatedReceipt
         });
+    }
+    static async deleteReceipt(req, res){
+        const user = req.user;
+        const receiptId = req.params.id;
+        const receipt = await dbClient.findUserReceipt(user, receiptId);
+        if (!receipt || receipt.length === 0)
+            return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
+        try{
+            await dbClient.deleteReceipt(receiptId);
+            return res.status(200).json({});
+        }catch(error){
+            return res.status(500).json({ error: `Error deleting receipt with id ${receiptId}, ${error}`});
+        }
     }
 }
