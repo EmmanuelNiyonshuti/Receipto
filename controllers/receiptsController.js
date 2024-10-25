@@ -4,6 +4,7 @@
  */
 import dbClient from '../utils/db.js';
 import fs from 'fs';
+import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
 
 export class ReceiptsController {
     static async createReceipt(req, res) {
@@ -13,17 +14,25 @@ export class ReceiptsController {
         const file = req.files[0];
         const receiptCategory = req.query.category;
         if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
-        const newReceipt = await dbClient.createReceipt(user, receiptCategory, file);
-        if (newReceipt.error)
-            return res.status(500).json({ msg: `Failed to upload the receipt, ${newReceipt.error}`});
-        return res.status(201).json({
-            msg: 'Receipt uploaded successfully',
-            id: newReceipt.insertedId
-        });
+        try{
+            const newFile = await uploadReceiptToCloudinary(file.buffer);
+            if (!newFile || !newFile.url){
+                return res.status(500).json({error: 'Failed to upload to cloudinary'});
+            }
+            const newReceipt = await dbClient.createReceipt(user, receiptCategory, file, newFile);
+            return res.status(201).json({
+                msg: 'Receipt uploaded successfully',
+                id: newReceipt.insertedId,
+                url: newFile.url
+            });
+        }catch(error){
+            return res.status(500).json({ msg: `Failed to upload the receipt, ${error.message}`});
+        }
     }
     static async getUserReceipts(req, res){
         const user = req.user;
         const userReceipts = await dbClient.findUserReceipts(user);
+        console.log(userReceipts);
         return res.status(200).json(userReceipts);
     }
     static async getSingleReceipt(req, res){

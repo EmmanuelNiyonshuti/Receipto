@@ -7,12 +7,9 @@ import dbClient from '../utils/db.js';
 import { validationResult } from 'express-validator';
 import { generateAccessToken } from '../utils/jwt.js';
 
-class AuthController{
+class AuthController {
     static async createUser(req, res, next) {
         const { username, email, password } = req.body;
-        if (email == undefined){
-            const error = new Error('');
-        }
         const errors = validationResult(req);
         if (!errors.isEmpty()){
             const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);

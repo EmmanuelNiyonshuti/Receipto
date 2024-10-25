@@ -1,9 +1,7 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
 import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
-import path from 'path';
-import url from 'url';
-
+import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
 
 const DB_HOST = process.env.DB_HOST;
 const DB_PORT = process.env.DB_PORT;
@@ -57,19 +55,20 @@ class DBClient {
         const user = await this.db.collection('users').findOne({ email: email });
         return user ? user : null;
     }
-    async createReceipt(user, receiptCategory, file){
+    async createReceipt(user, receiptCategory, file, newFile){
         if (!this.isAlive()) return;
         try{
-            const relativePath = path.join('uploads', file.filename);
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
+                folder: newFile.asset_folder || 'Receipts',
+                type: newFile.type,
+                format: newFile.format,
                 category: receiptCategory,
-                filename: file.filename,
-                uploadDate: new Date().toISOString(),
-                fileUrl: relativePath,
+                fileUrl: newFile.url,
                 metadata: {
                     size: file.size,
-                    type: file.mimetype
+                    type: file.mimetype,
+                    created_at: newFile.created_at || new Date().toISOString()
                 }
             });
             return newReceipt;

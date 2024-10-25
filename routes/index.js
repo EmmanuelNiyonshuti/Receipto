@@ -7,13 +7,11 @@ import { authUser } from '../middleware/auth.js';
 import { ReceiptsController } from '../controllers/receiptsController.js';
 import { upload } from '../middleware/receiptsUpload.js';
 
-
 const router = express.Router();
 
-// api status
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
-// user authentication
+
 router.post('/users/register', validateUser, AuthController.createUser);
 router.post('/users/login', AuthController.userLogin);
 router.get('/users/profile', authUser, UserController.getUser);
