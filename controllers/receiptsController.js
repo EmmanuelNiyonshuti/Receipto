@@ -5,6 +5,8 @@
 import dbClient from '../utils/db.js';
 import fs from 'fs';
 import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
+import request from 'request';
+import axios from 'axios';
 
 export class ReceiptsController {
     static async createReceipt(req, res) {
@@ -42,20 +44,16 @@ export class ReceiptsController {
         if (!receipt || receipt.length === 0)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
         const filePath = receipt[0].fileUrl;
-        try {
-            await fs.promises.access(filePath, fs.constants.F_OK);
-        } catch (error){
-            return res.status(404).json({ error: `File not found, ${error}` });
+        try{
+            const resp = await axios.get(filePath, {responseType: 'stream'});
+            resp.data.pipe(res);
+        }catch(error){
+            return res.status(500).json({ error: `Error downloading file ${error}`});
         }
-        return res.download(filePath, receipt[0].filename, (error) => {
-            if (error && !res.headersSent)
-                return res.status(500).json({error: `Internal Server Error, ${error}`});
-        });
     }
     static async getReceiptByCategory(req, res){
         const user = req.user;
         const category = req.params.category;
-        console.log(category);
         const receipts = await dbClient.findReceiptByCategory(user, category);
         if (!receipts || receipts.length == 0)
             return res.status(404).json({ error: `no receipt found for this category`});

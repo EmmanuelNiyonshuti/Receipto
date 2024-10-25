@@ -58,13 +58,15 @@ class DBClient {
     async createReceipt(user, receiptCategory, file, newFile){
         if (!this.isAlive()) return;
         try{
+            console.log(newFile);
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
                 folder: newFile.asset_folder || 'Receipts',
                 type: newFile.type,
                 format: newFile.format,
                 category: receiptCategory,
-                fileUrl: newFile.url,
+                fileUrl: newFile.secure_url,
+                fileName: newFile.original_name,
                 metadata: {
                     size: file.size,
                     type: file.mimetype,
