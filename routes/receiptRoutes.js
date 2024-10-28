@@ -60,7 +60,9 @@ const router = express.Router();
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Missing receipt category" or "No file uploaded"
+ *                   oneOf:
+ *                     - example: "Missing receipt category"
+ *                     - example: "No file uploaded"
  *       500:
  *         description: Internal Server Error (Failed to upload receipt)
  *         content:
@@ -147,7 +149,7 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *       - name: category
  *         in: path
  *         required: true
- *         description: The category of receipts to filter by
+ *         description: The category of receipts to filter by.
  *         schema:
  *           type: string
  *           example: "groceries"
@@ -161,8 +163,8 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "found 2 receipts in groceries category."
- *                 receipt:
+ *                   example: "Found 2 receipts in groceries category."
+ *                 receipts:  # Renamed from "receipt" to "receipts" for clarity
  *                   type: array
  *                   items:
  *                     type: object
@@ -189,7 +191,7 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "no receipt found for this category"
+ *                   example: "No receipts found for this category."
  *       401:
  *         description: Unauthorized (User is not authenticated)
  *         content:
@@ -209,7 +211,7 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *               properties:
  *                 msg:
  *                   type: string
- *                   example: "An error occurred while retrieving receipts"
+ *                   example: "An error occurred while retrieving receipts."
  */
 router.get('/category/:category', authUser, ReceiptsController.getReceiptByCategory);
 
@@ -225,7 +227,7 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *       - name: id
  *         in: path
  *         required: true
- *         description: The ID of the receipt to retrieve
+ *         description: The ID of the receipt to retrieve.
  *         schema:
  *           type: string
  *           example: "60c72b2f4f1a4b001c8d4c60"
@@ -246,7 +248,7 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "receipt with id 60c72b2f4f1a4b001c8d4c60 is not found"
+ *                   example: "Receipt with ID 60c72b2f4f1a4b001c8d4c60 is not found."
  *       401:
  *         description: Unauthorized (User is not authenticated)
  *         content:
@@ -266,7 +268,7 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Error downloading file <error message>"
+ *                   example: "Error downloading file: <error message>"
  */
 router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
 /**
@@ -297,6 +299,7 @@ router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
  *                 example: "Groceries"
  *               metadata:
  *                 type: object
+ *                 additionalProperties: true
  *                 example: { "total": 50, "currency": "USD" }
  *               fileName:
  *                 type: string
@@ -314,7 +317,19 @@ router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
  *                   example: "Receipt updated successfully"
  *                 updatedReceipt:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "60c72b2f4f1a4b001c8d4c60"
+ *                     category:
+ *                       type: string
+ *                       example: "Groceries"
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                     fileName:
+ *                       type: string
+ *                       example: "receipt.pdf"
  *       404:
  *         description: Receipt not found for the specified ID
  *         content:
@@ -324,7 +339,7 @@ router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "receipt with id 60c72b2f4f1a4b001c8d4c60 is not found"
+ *                   example: "Receipt with ID 60c72b2f4f1a4b001c8d4c60 not found."
  *       401:
  *         description: Unauthorized (User is not authenticated)
  *         content:
@@ -371,7 +386,10 @@ router.put('/:id', authUser, ReceiptsController.updateReceipt);
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: false
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Receipt deleted successfully"
  *       404:
  *         description: Receipt not found for the specified ID
  *         content:

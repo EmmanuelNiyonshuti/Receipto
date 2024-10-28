@@ -1,7 +1,7 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
-import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import crypto from 'crypto';
-import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
+import { extractTextFromReceipt } from '../services/tesseractService.js';
 
 const DB_HOST = process.env.DB_HOST;
 const DB_PORT = process.env.DB_PORT;
@@ -25,7 +25,6 @@ class DBClient {
             this.connected = false;
         }
     }
-
     isAlive(){
         return this.connected;
     }
@@ -43,7 +42,7 @@ class DBClient {
             const user = await this.findUserByEmail(email);
             if (user) return {'error': `user with ${email} already exists, please use another email`};
             const hashedPw = this.hashPw(password);
-            const newUser = { username, email, hashedPw};
+            const newUser = { username, email, hashedPw };
             await this.db.collection('users').insertOne(newUser);
             return newUser;
         }catch(error){
@@ -58,7 +57,7 @@ class DBClient {
     async createReceipt(user, receiptCategory, file, newFile){
         if (!this.isAlive()) return;
         try{
-            console.log(newFile);
+            const extractedText = await extractTextFromReceipt(file.buffer);
             const newReceipt = await this.db.collection('receipts').insertOne({
                 userId: user._id,
                 folder: newFile.asset_folder || 'Receipts',
@@ -69,7 +68,8 @@ class DBClient {
                 metadata: {
                     size: file.size,
                     type: file.mimetype,
-                    created_at: newFile.created_at || new Date().toISOString()
+                    created_at: newFile.created_at || new Date().toISOString(),
+                    extractedText: extractedText
                 }
             });
             return newReceipt;
@@ -77,7 +77,7 @@ class DBClient {
             return {'error': error };
         }
     }
-    async allReceipts(){
+    async allReceipts() {
         if (!this.isAlive()) return;
         const receipts = await this.db.collection('receipts').find().toArray();
         return receipts;
@@ -101,10 +101,10 @@ class DBClient {
         if (!this.isAlive()) return;
         try{
             const updatedAt = {updatedAt: new Date().toISOString()};
+            const updatedData = { ...updateData, ...updatedAt };
             const updated = await this.db.collection('receipts').findOneAndUpdate(
                 { _id: ObjectId.createFromHexString(receiptId), userId: user._id },
-                { $set: updateData },
-                { $set: updatedAt },
+                { $set: updatedData },
                 { ReturnDocument: 'after' }
             );
             return updated;

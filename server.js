@@ -6,9 +6,12 @@ import { notFound } from './middleware/notFound.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import {swaggerDocument, options} from './docs/swaggerDoc.js';
+import cors from 'cors';
 
 const port = process.env.PORT || 3000;
 const app = express();
+
+app.use(cors());
 
 const swaggerDocs = swaggerJSDoc(swaggerDocument);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, options));

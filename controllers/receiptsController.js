@@ -11,12 +11,13 @@ export class ReceiptsController {
         const user = req.user;
         const receiptCategory = req.query.category;
         if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
-        if (!req.files || req.files.length == 0)
+        console.log(req.files)
+        if (!req.files || req.files.length === 0)
             return res.status(400).json({ error: 'No file uploaded' });
         const file = req.files[0];
         try{
             const newFile = await uploadReceiptToCloudinary(file.buffer);
-            if (!newFile || !newFile.url){
+            if (!newFile || !newFile.url) {
                 return res.status(500).json({error: 'Failed to upload to cloudinary'});
             }
             const newReceipt = await dbClient.createReceipt(user, receiptCategory, file, newFile);
@@ -32,7 +33,6 @@ export class ReceiptsController {
     static async getUserReceipts(req, res){
         const user = req.user;
         const userReceipts = await dbClient.findUserReceipts(user);
-        console.log(userReceipts);
         return res.status(200).json(userReceipts);
     }
     static async getSingleReceipt(req, res){

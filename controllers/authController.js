@@ -44,7 +44,7 @@ class AuthController {
         const { email, password } = req.body;
         const user = await dbClient.findUserByEmail(email);
         if (!user){
-            const error = new Error('user not found');
+            const error = new Error('user not found, please register first');
             error.status = 404;
             return next(error);
         }

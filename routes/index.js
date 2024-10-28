@@ -11,7 +11,7 @@ const router = express.Router();
  *   get:
  *     summary: Check API status
  *     responses:
- *     200:
+ *       200:
  *         description: API is running
  */
 router.get('/status', AppController.getStatus);
