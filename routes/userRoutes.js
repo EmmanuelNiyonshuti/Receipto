@@ -5,7 +5,6 @@ import AuthController from '../controllers/authController.js';
 import { authUser } from '../middleware/auth.js';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /api/users/register:
@@ -110,7 +109,7 @@ router.post('/register', validateUser, AuthController.createUser);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Email is required: "
+ *                   example: "Email is required"
  *       401:
  *         description: Unauthorized (Invalid password)
  *         content:
@@ -130,9 +129,8 @@ router.post('/register', validateUser, AuthController.createUser);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "user not found"
+ *                   example: "User not found"
  */
-
 router.post('/login', AuthController.userLogin);
 
 /**
@@ -154,13 +152,16 @@ router.post('/login', AuthController.userLogin);
  *                 id:
  *                   type: string
  *                   example: "607d1f77bcf86cd799439011"
+ *                   description: The unique identifier of the user.
  *                 username:
  *                   type: string
  *                   example: "john_doe"
+ *                   description: The username of the authenticated user.
  *                 email:
  *                   type: string
  *                   format: email
  *                   example: "john@example.com"
+ *                   description: The email address of the user.
  *       401:
  *         description: Unauthorized (User not authenticated)
  *         content:
@@ -171,6 +172,26 @@ router.post('/login', AuthController.userLogin);
  *                 error:
  *                   type: string
  *                   example: "Unauthorized"
+ *       404:
+ *         description: Not Found (User profile not found)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User profile not found"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error occurred"
  */
 router.get('/profile', authUser, UserController.getUser);
 

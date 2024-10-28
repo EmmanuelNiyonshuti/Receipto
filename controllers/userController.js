@@ -12,11 +12,6 @@ class UserController{
             email: user.email
         });
     }
-    static updateUser(req, res){
-    }
-    static deleteUser(req, res){
-        
-    }
 }
 
 export default UserController;

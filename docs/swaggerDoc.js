@@ -2,7 +2,7 @@ export const swaggerDocument = {
     swaggerDefinition: {
       openapi: '3.0.0',
       info: {
-        title: 'Receipto API',
+        title: 'Receipt management REST API',
         version: '1.0.0',
         description: 'API documentation for Receipto',
       },
@@ -86,7 +86,7 @@ export const swaggerDocument = {
         },
       },
     },
-    apis: ['./routes/*.js'], // path to API docs
+    apis: ['./routes/*.js'],
   };
 
 export const options = {
