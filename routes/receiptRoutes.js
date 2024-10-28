@@ -1,7 +1,10 @@
-import router from ".";
+import express from 'express';
 import { ReceiptsController } from '../controllers/receiptsController.js';
 import { upload } from '../middleware/receiptsUpload.js';
 import { authUser } from '../middleware/auth.js';
+
+
+const router = express.Router();
 
 /**
  * @swagger
@@ -69,7 +72,7 @@ import { authUser } from '../middleware/auth.js';
  *                   type: string
  *                   example: "Failed to upload the receipt, <error_message>"
  */
-router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceipt);
+router.post('/', authUser, upload.any(), ReceiptsController.createReceipt);
 
 
 /**
@@ -130,7 +133,7 @@ router.post('/receipts', authUser, upload.any(), ReceiptsController.createReceip
  *                   type: string
  *                   example: "An error occurred while retrieving receipts"
  */
-router.get('/receipts', authUser, ReceiptsController.getUserReceipts);
+router.get('/', authUser, ReceiptsController.getUserReceipts);
 
 /**
  * @swagger
@@ -208,7 +211,7 @@ router.get('/receipts', authUser, ReceiptsController.getUserReceipts);
  *                   type: string
  *                   example: "An error occurred while retrieving receipts"
  */
-router.get('/receipts/category/:category', authUser, ReceiptsController.getReceiptByCategory);
+router.get('/category/:category', authUser, ReceiptsController.getReceiptByCategory);
 
 /**
  * @swagger
@@ -265,7 +268,7 @@ router.get('/receipts/category/:category', authUser, ReceiptsController.getRecei
  *                   type: string
  *                   example: "Error downloading file <error message>"
  */
-router.get('/receipts/:id', authUser, ReceiptsController.getSingleReceipt);
+router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
 /**
  * @swagger
  * /api/receipts/{id}:
@@ -343,7 +346,7 @@ router.get('/receipts/:id', authUser, ReceiptsController.getSingleReceipt);
  *                   type: string
  *                   example: "Failed to update receipt, <error message>"
  */
-router.put('/receipts/:id', authUser, ReceiptsController.updateReceipt);
+router.put('/:id', authUser, ReceiptsController.updateReceipt);
 
 /**
  * @swagger
@@ -400,4 +403,6 @@ router.put('/receipts/:id', authUser, ReceiptsController.updateReceipt);
  *                   type: string
  *                   example: "Error deleting receipt with id 60c72b2f4f1a4b001c8d4c60, <error message>"
  */
-router.delete('/receipts/:id', authUser, ReceiptsController.deleteReceipt);
+router.delete('/:id', authUser, ReceiptsController.deleteReceipt);
+
+export default router;

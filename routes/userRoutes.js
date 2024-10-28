@@ -1,7 +1,10 @@
-import router from ".";
+import express from 'express';
 import UserController from '../controllers/userController.js';
 import validateUser from '../middleware/validateUser.js';
 import AuthController from '../controllers/authController.js';
+import { authUser } from '../middleware/auth.js';
+
+const router = express.Router();
 
 /**
  * @swagger
@@ -64,7 +67,7 @@ import AuthController from '../controllers/authController.js';
  *                   type: string
  *                   example: "Internal server error occurred"
  */
-router.post('/users/register', validateUser, AuthController.createUser);
+router.post('/register', validateUser, AuthController.createUser);
 
 /**
  * @swagger
@@ -130,7 +133,7 @@ router.post('/users/register', validateUser, AuthController.createUser);
  *                   example: "user not found"
  */
 
-router.post('/users/login', AuthController.userLogin);
+router.post('/login', AuthController.userLogin);
 
 /**
  * @swagger
@@ -169,4 +172,6 @@ router.post('/users/login', AuthController.userLogin);
  *                   type: string
  *                   example: "Unauthorized"
  */
-router.get('/users/profile', authUser, UserController.getUser);
+router.get('/profile', authUser, UserController.getUser);
+
+export default router;
