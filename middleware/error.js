@@ -1,5 +1,6 @@
 
 import express from 'express';
+import multer from 'multer';
 
 export const errorHandler = (error, req, res, next) => {
     if (error.status){
@@ -15,8 +16,23 @@ export const JsonErrorHandler = express.json({
         try{
             JSON.parse(buf);
         }catch(e){
-            e.status = 400;
-            throw Error('Invalid JSON');
+            const error = new Error('Invalid JSON')
+            error.status = 400;
+            throw error;
         }
     }
 });
+
+export const multerError = (error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        return res.status(400).json({
+            success: false,
+            error: {
+                code: 'MULTER_ERROR',
+                message: error.message,
+                field: error.field
+            }
+        });
+    }
+    next(error);
+};
