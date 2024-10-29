@@ -11,11 +11,36 @@ import cors from 'cors';
 const port = process.env.PORT || 3000;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
-const swaggerDocs = swaggerJSDoc(swaggerDocument);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, options));
 
+const swaggerDocs = swaggerJSDoc({
+    ...swaggerDocument,
+    swaggerDefinition: {
+      ...swaggerDocument.swaggerDefinition,
+      servers: [
+        {
+          url: '/api',
+          description: 'Local API Server'
+        }
+      ]
+    }
+  });
+    const swaggerUiOptions = {
+        ...options,
+        swaggerOptions: {
+            persistAuthorization: true,
+            tryItOutEnabled: true,
+            displayRequestDuration: true
+        }
+    }
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOptions));
+    
 app.use(logger);
 app.use(JsonErrorHandler);
 app.use(multerError);
