@@ -18,28 +18,27 @@ app.use(cors({
     credentials: true
 }));
 
-
 const swaggerDocs = swaggerJSDoc({
     ...swaggerDocument,
     swaggerDefinition: {
       ...swaggerDocument.swaggerDefinition,
       servers: [
         {
-          url: '/api',
-          description: 'Local API Server'
+          url: '/',
+          description: 'Development Server'
         }
       ]
     }
   });
-    const swaggerUiOptions = {
-        ...options,
-        swaggerOptions: {
-            persistAuthorization: true,
-            tryItOutEnabled: true,
-            displayRequestDuration: true
-        }
-    }
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOptions));
+const swaggerUiOptions = {
+  ...options,
+  swaggerOptions: {
+    persistAuthorization: true,
+    tryItOutEnabled: true,
+    displayRequestDuration: true
+  }
+}
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOptions));
     
 app.use(logger);
 app.use(JsonErrorHandler);

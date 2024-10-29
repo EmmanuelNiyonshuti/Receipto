@@ -5,6 +5,7 @@ import AuthController from '../controllers/authController.js';
 import { authUser } from '../middleware/auth.js';
 
 const router = express.Router();
+
 /**
  * @swagger
  * /api/users/register:
@@ -20,11 +21,11 @@ const router = express.Router();
  *             properties:
  *               username:
  *                 type: string
- *                 example: "john_doe"
+ *                 example: "jane_doe"
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "john@example.com"
+ *                 example: "jane@example.com"
  *               password:
  *                 type: string
  *                 minLength: 6
@@ -42,9 +43,9 @@ const router = express.Router();
  *                   example: "603d2e0f1f1b2b001c4f75a3"
  *                 username:
  *                   type: string
- *                   example: "john_doe"
+ *                   example: "jane_doe"
  *                 email:
- *                   example: "john@example.com"
+ *                   example: "jane@example.com"
  *       400:
  *         description: Bad Request (Validation errors)
  *         content:
@@ -67,7 +68,6 @@ const router = express.Router();
  *                   example: "Internal server error occurred"
  */
 router.post('/register', validateUser, AuthController.createUser);
-
 /**
  * @swagger
  * /api/users/login:
@@ -132,7 +132,6 @@ router.post('/register', validateUser, AuthController.createUser);
  *                   example: "User not found"
  */
 router.post('/login', AuthController.userLogin);
-
 /**
  * @swagger
  * /api/users/profile:
