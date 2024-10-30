@@ -1,5 +1,5 @@
 // @desc Establishes connection to MongoDB and provides utility functions for database operations
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
 import { extractTextFromReceipt } from '../services/tesseractService.js';
 
@@ -54,6 +54,29 @@ class DBClient {
         const user = await this.db.collection('users').findOne({ email: email });
         return user ? user : null;
     }
+    async updateUser(user, data){
+        if (!this.isAlive()) return;
+        try{
+            const updatedAt = { updatedAt: new Date().toISOString() };
+            const data = {...data, ...updatedAt};
+            const updatedUser = await this.db.collection('users').findOneAndUpdate(
+                {_id: ObjectId.createFromHexString(user._id)},
+                { $set: data},
+                { ReturnDocument: 'after' }
+            );
+            return updatedUser;
+        }catch(error){
+            return { 'error': error.message };
+        }
+    }
+    async deleteUser(user){
+        if (!this.isAlive()) return;
+        try{
+            await this.db.collection('users').deleteOne({ _id: ObjectId.createFromHexString(user._id) });
+        }catch(error){
+            return {'error': error};
+        }
+    }
     async createReceipt(user, receiptCategory, file, newFile){
         if (!this.isAlive()) return;
         try{
@@ -74,7 +97,7 @@ class DBClient {
             });
             return newReceipt;
         }catch(error){
-            return {'error': error };
+            return {'error': error.message };
         }
     }
     async allReceipts() {

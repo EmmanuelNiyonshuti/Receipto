@@ -194,4 +194,8 @@ router.post('/login', AuthController.userLogin);
  */
 router.get('/profile', authUser, UserController.getUser);
 
+router.put('/', authUser, UserController.updateUser);
+
+router.delete('/', authUser, UserController.deleteUser);
+
 export default router;

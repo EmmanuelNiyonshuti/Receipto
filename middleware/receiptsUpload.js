@@ -3,7 +3,7 @@ import multer from 'multer';
 
 const storage = multer.memoryStorage();
 
-const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
 
 const fileFilter = (req, file, cb) => {
     try{
@@ -13,7 +13,7 @@ const fileFilter = (req, file, cb) => {
             cb(null, false);
         }
     }catch(error){
-        cb(new Error('Error uploading file', error));
+        cb(new Error('Error uploading file', error.message));
     }
 }
 export const upload = multer({
