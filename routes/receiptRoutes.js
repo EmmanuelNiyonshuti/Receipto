@@ -328,7 +328,7 @@ router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
  *                       additionalProperties: true
  *                     fileName:
  *                       type: string
- *                       example: "receipt.pdf"
+ *                       example: "receipt.png"
  *       404:
  *         description: Receipt not found for the specified ID
  *         content:

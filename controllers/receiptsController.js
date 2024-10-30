@@ -10,6 +10,7 @@ export class ReceiptsController {
     static async createReceipt(req, res) {
         const user = req.user;
         const receiptCategory = req.query.category;
+        console.log('receipt Category:', receiptCategory);
         if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
         console.log(req.files)
         if (!req.files || req.files.length === 0)
@@ -42,8 +43,11 @@ export class ReceiptsController {
         if (!receipt || receipt.length === 0)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
         const filePath = receipt[0].fileUrl;
+        console.log('file Path', filePath);
         try{
             const resp = await axios.get(filePath, {responseType: 'stream'});
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Content-Disposition', `attachment; filename="${filePath.split('/').pop() || 'receipt'}"`);
             resp.data.pipe(res);
         }catch(error){
             return res.status(500).json({ error: `Error downloading file ${error}`});
@@ -54,7 +58,7 @@ export class ReceiptsController {
         const category = req.params.category;
         const receipts = await dbClient.findReceiptByCategory(user, category);
         if (!receipts || receipts.length == 0)
-            return res.status(404).json({ error: `no receipt found for this category`});
+            return res.status(404).json({ error: `no receipt found for ${category} category`});
         return res.status(200).json({
             message: `found ${receipts.length} receipts in ${category} category.`,
             receipt: receipts.map(receipt => ({
