@@ -3,7 +3,7 @@
  * @route GET /api/users/profile
  */
 
-import dbClient from "../utils/db.js";
+import dbClient from "../../utils/db.js";
 
 class UserController{
     static getUser(req, res){

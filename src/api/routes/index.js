@@ -1,3 +1,7 @@
+/**
+ * @desc define and documents API status related endpoints
+ */
+
 import express from 'express';
 import AppController from '../controllers/appController.js';
 import userRoutes from './userRoutes.js';
@@ -49,7 +53,7 @@ router.get('/status', AppController.getStatus);
  *                      message:
  *                          type: string
  *                          example: Internal Server Error
- */
+*/
 router.get('/stats', AppController.getStats);
 
 router.use('/users', userRoutes);

@@ -1,7 +1,7 @@
 
 import jwt from 'jsonwebtoken';
-import dbClient from "../utils/db.js";
-import { verifyAccessToken } from "../utils/jwt.js";
+import dbClient from "../../utils/db.js";
+import { verifyAccessToken } from '../../utils/jwt.js';
 
 export const authUser = async (req, res, next) => {
     try{

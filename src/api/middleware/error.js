@@ -16,7 +16,7 @@ export const JsonErrorHandler = express.json({
         try{
             JSON.parse(buf);
         }catch(e){
-            const error = new Error('Invalid JSON')
+            const error = new Error('Invalid JSON');
             error.status = 400;
             throw error;
         }

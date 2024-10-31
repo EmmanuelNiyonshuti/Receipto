@@ -2,8 +2,8 @@
  * @desc Receipts management controllers.
  * @route POST /api/receipts
  */
-import dbClient from '../utils/db.js';
-import { uploadReceiptToCloudinary } from '../services/cloudinaryServices.js';
+import dbClient from '../../utils/db.js';
+import { uploadReceiptToCloudinary } from '../../services/cloudinaryServices.js';
 import axios from 'axios';
 
 export class ReceiptsController {

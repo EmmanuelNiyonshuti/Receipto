@@ -3,9 +3,9 @@
  * @route POST /api/users/register
  * @route POST /api/users/login
  */
-import dbClient from '../utils/db.js';
+import dbClient from '../../utils/db.js';
 import { validationResult } from 'express-validator';
-import { generateAccessToken } from '../utils/jwt.js';
+import { generateAccessToken } from '../../utils/jwt.js'
 
 class AuthController {
     static async createUser(req, res, next) {

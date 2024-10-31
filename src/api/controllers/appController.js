@@ -1,6 +1,6 @@
 // @api status controller
 
-import dbClient from "../utils/db.js";
+import dbClient from "../../utils/db.js";
 
 class AppController {
     static getStatus(req, res, next){

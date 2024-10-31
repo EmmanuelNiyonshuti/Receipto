@@ -1,3 +1,6 @@
+/**
+ * @desc define and documents all users endpoints
+ */
 import express from 'express';
 import UserController from '../controllers/userController.js';
 import validateUser from '../middleware/validateUser.js';
@@ -137,7 +140,7 @@ router.post('/login', AuthController.userLogin);
  * /api/users/profile:
  *   get:
  *     summary: Retrieve user profile
- *     description: Fetches the profile information of the authenticated user.
+ *     description: Fetches the profile information of the authenticated use
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -194,8 +197,92 @@ router.post('/login', AuthController.userLogin);
  */
 router.get('/profile', authUser, UserController.getUser);
 
+/**
+ * @swagger
+ * /api/users:
+ *   put:
+ *     summary: Update user
+ *     description: Update the details of an authenticated user.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The updated name of the user
+ *               email:
+ *                 type: string
+ *                 description: The updated email of the user
+ *               password:
+ *                 type: string
+ *                 description: The updated password of the user
+ *             example:
+ *               name: "John Doe"
+ *               email: "john.doe@example.com"
+ *               password: "newpassword123"
+ *     responses:
+ *       200:
+ *         description: User successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User updated successfully"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "12345"
+ *                     name:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "john.doe@example.com"
+ *       400:
+ *         description: Bad request, invalid input
+ *       401:
+ *         description: Unauthorized, user not authenticated
+ *       500:
+ *         description: Internal server error
+ */
 router.put('/', authUser, UserController.updateUser);
 
+/**
+ * @swagger
+ * /api/users:
+ *   delete:
+ *     summary: Delete user
+ *     description: Delete the authenticated user's account.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted successfully"
+ *       401:
+ *         description: Unauthorized, user not authenticated
+ *       404:
+ *         description: Not found, user does not exist
+ *       500:
+ *         description: Internal server error
+ */
 router.delete('/', authUser, UserController.deleteUser);
 
 export default router;

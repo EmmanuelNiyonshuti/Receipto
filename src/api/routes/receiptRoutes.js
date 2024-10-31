@@ -1,3 +1,6 @@
+/**
+ * @desc define and documents receipts endpoints
+ */
 import express from 'express';
 import { ReceiptsController } from '../controllers/receiptsController.js';
 import { upload } from '../middleware/receiptsUpload.js';

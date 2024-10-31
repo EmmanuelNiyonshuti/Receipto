@@ -1,8 +1,8 @@
 import express from 'express';
-import router from './routes/index.js';
-import logger from './middleware/logger.js';
-import { errorHandler, JsonErrorHandler, multerError } from './middleware/error.js';
-import { notFound } from './middleware/notFound.js';
+import router from './src/api/routes/index.js'
+import logger from './src/api/middleware/logger.js';
+import { errorHandler, JsonErrorHandler, multerError } from './src/api/middleware/error.js';
+import { notFound } from './src/api/middleware/notFound.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import {swaggerDocument, options} from './docs/swaggerDoc.js';

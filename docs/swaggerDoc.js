@@ -16,7 +16,7 @@ export const swaggerDocument = {
       },
     },
   },
-  apis: ['./routes/*.js'],
+  apis: ['./src/api/routes/*.js'],
 };
 
 export const options = {
