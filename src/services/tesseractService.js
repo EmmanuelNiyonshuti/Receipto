@@ -11,11 +11,29 @@ const fieldPatterns = {
     poc: /POC:?\s*([0-9]+)/i,
     billType: /(Water|Electricity|Gas)\s*bill/i,
     name: /Name:?\s*([A-Za-z\s]+)/i,
-    amount: /Amount:?\s*\$?\s*([0-9]+\.?[0-9]*)/i,
     amount: /Amount:?\s*\$?\s*([0-9]+\.?[0-9]*)/i
 }
 
+const extractMetadata = (text) => {
+    const extractedData = {
+        tin: null,
+        period: null,
+        poc: null,
+        billtype: null,
+        name: null,
+        amount: null
+    };
+    for (const [key, pattern] of Object.entries(fieldPatterns)){
+        const match = text.match(pattern);
+        if (match && match[1]){
+            extractedData[key] = match[1].trim();
+        }
+    }
+    return extractedData;
+}
+
 const preprocessImage = async imageBuffer => {
+    // process image buffer to enhance OCR performance
     try{
         const processed = await sharp(imageBuffer)
              .resize({ width: 1200 })
@@ -28,7 +46,6 @@ const preprocessImage = async imageBuffer => {
              .toBuffer();
         return processed;
     }catch(error){
-        console.error('Error preprocessing image:', error);
         throw error;
     }
 }
@@ -51,14 +68,10 @@ export async function extractTextFromReceipt(imageBuffer) {
             tessedit_ocr_engine_mode: '1',
             preserve_interword_spaces: '1',
         });
-        const { data: { text, words, confidence: overallConfidence } } = await worker.recognize(processedBuffer, {confidence: true});
+        const { data: { text } } = await worker.recognize(processedBuffer);
         await worker.terminate();
-        const extractedData = {
-            billDetails: {
-
-            }
-        }
-        return text;
+        const data = extractMetadata(text);
+        return data; 
     }catch(error){
         console.error('Error during ocr processing', error);
         throw error;
