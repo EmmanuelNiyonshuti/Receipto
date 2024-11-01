@@ -10,9 +10,7 @@ export class ReceiptsController {
     static async createReceipt(req, res) {
         const user = req.user;
         const receiptCategory = req.query.category;
-        console.log('receipt Category:', receiptCategory);
         if (!receiptCategory) return res.status(400).json({ error: 'Missing receipt category' });
-        console.log(req.files)
         if (!req.files || req.files.length === 0)
             return res.status(400).json({ error: 'No file uploaded' });
         const file = req.files[0];
@@ -34,7 +32,14 @@ export class ReceiptsController {
     static async getUserReceipts(req, res){
         const user = req.user;
         const userReceipts = await dbClient.findUserReceipts(user);
-        return res.status(200).json(userReceipts);
+        return res.status(200).json(userReceipts.map(receipt => ({
+            id: receipt._id,
+            url: receipt.fileUrl,
+            category: receipt.category,
+            format: receipt.format,
+            createdAt: receipt.metadata?.created_at,
+            size: receipt.metadata?.size
+        })));
     }
     static async getSingleReceipt(req, res){
         const user = req.user;
@@ -43,11 +48,10 @@ export class ReceiptsController {
         if (!receipt || receipt.length === 0)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
         const filePath = receipt[0].fileUrl;
-        console.log('file Path', filePath);
         try{
             const resp = await axios.get(filePath, {responseType: 'stream'});
-            res.setHeader('Content-Type', 'application/octet-stream');
-            res.setHeader('Content-Disposition', `attachment; filename="${filePath.split('/').pop() || 'receipt'}"`);
+            // res.setHeader('Content-Type', 'application/octet-stream');
+            // res.setHeader('Content-Disposition', `attachment; filename="${filePath.split('/').pop() || 'receipt'}"`);
             resp.data.pipe(res);
         }catch(error){
             return res.status(500).json({ error: `Error downloading file ${error}`});
@@ -62,10 +66,11 @@ export class ReceiptsController {
         return res.status(200).json({
             message: `found ${receipts.length} receipts in ${category} category.`,
             receipt: receipts.map(receipt => ({
-                filename: receipt.fileName,
-                uploadDate: receipt.uploadDate,
-                filePath: receipt.fileUrl,
-                metadata: receipt.metadata
+                id: receipt._id,
+                type: receipt.metadata.type,
+                size: receipt.metadata.size,
+                url: receipt.fileUrl,
+                uploadDate: receipt.updatedAt || receipt.metadata.createdAt,
             }))
         });
     }
@@ -81,7 +86,10 @@ export class ReceiptsController {
             return res.status(500).json({ error: `Failed to update receipt, ${updatedReceipt.error}`});
         return res.status(200).json({
             msg: 'Receipt updated successfully',
-            updatedReceipt: updatedReceipt
+            id: updatedReceipt._id,
+            url: updatedReceipt.fileUrl,
+            category: updatedReceipt.category,
+            updatedAt: updatedReceipt.updatedAt || new Date().toISOString()
         });
     }
     static async deleteReceipt(req, res){

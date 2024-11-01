@@ -51,8 +51,12 @@ class DBClient {
     }
     async findUserByEmail(email){
         if (!this.isAlive()) return;
-        const user = await this.db.collection('users').findOne({ email: email });
-        return user ? user : null;
+        try{
+            const user = await this.db.collection('users').findOne({ email: email });
+            return user;
+        }catch(error){
+            return { 'error': error };
+        }
     }
     async updateUser(user, data){
         if (!this.isAlive()) return;

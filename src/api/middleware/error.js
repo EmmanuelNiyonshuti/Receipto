@@ -1,14 +1,13 @@
-
 import express from 'express';
 import multer from 'multer';
 
 export const errorHandler = (error, req, res, next) => {
+    if (res.headersSent) return;
     if (error.status){
-        res.status(error.status).json({ error: error.message });
+        return res.status(error.status).json({ error: error.message });
     }else{
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
-    next();
 }
 
 export const JsonErrorHandler = express.json({
@@ -24,6 +23,7 @@ export const JsonErrorHandler = express.json({
 });
 
 export const multerError = (error, req, res, next) => {
+    if (res.headersSent) return;
     if (error instanceof multer.MulterError) {
         return res.status(400).json({
             success: false,

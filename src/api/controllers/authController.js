@@ -42,19 +42,29 @@ class AuthController {
             return next(error);
         }
         const { email, password } = req.body;
-        const user = await dbClient.findUserByEmail(email);
-        if (!user){
-            const error = new Error('user not found, please register first');
-            error.status = 404;
-            return next(error);
+        if (!email){
+            return res.status(400).json({ error: 'Missing email'});
         }
-        if (!dbClient.checkPw(password, user.password)){
-            const error = new Error('Invalid password');
-            error.status = 401;
-            return next(error);
+        if (!password){
+            return res.status(400).json({ error: 'Missing password'});
         }
-        const token = generateAccessToken(user._id, email);
-        res.status(200).json({ token: token });
+        try{
+            const user = await dbClient.findUserByEmail(email);
+            if (!user){
+                const error = new Error('User not found');
+                error.status = 404;
+                return next(error);
+            }
+            if (!dbClient.checkPw(password, user.hashedPw)){
+                const error = new Error('Unauthorized');
+                error.status = 401;
+                return next(error);
+            }
+            const token = generateAccessToken(user._id, user.email);
+            return res.status(200).json({ token: token });
+        }catch(error){
+            return res.status(500).json({ error: error.message });
+        }
     }
 }
 
