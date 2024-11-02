@@ -8,11 +8,14 @@ import userRoutes from './userRoutes.js';
 import receiptRoutes from './receiptRoutes.js';
 
 const router = express.Router();
+
 /**
  * @swagger
  * /api/status:
  *   get:
  *     summary: Check API status
+ *     tags:
+ *          - Status
  *     responses:
  *       200:
  *         description: API is running
@@ -32,6 +35,8 @@ router.get('/status', AppController.getStatus);
  *   get:
  *     summary: Retrieve API statistics
  *     description: Get the number of users and receipts
+ *     tags:
+ *         - Status
  *     responses:
  *       200:
  *         description: API stats retrieved successfully

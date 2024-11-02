@@ -2,9 +2,9 @@ export const swaggerDocument = {
   swaggerDefinition: {
     openapi: '3.0.0',
     info: {
-      title: 'Receipt management REST API',
+      title: 'Receipt management RESTful API',
       version: '1.0.0',
-      description: 'API documentation for Receipt management REST API',
+      description: 'API documentation for Receipt management',
     },
     components: {
       securitySchemes: {
@@ -15,6 +15,11 @@ export const swaggerDocument = {
         },
       },
     },
+    tags: [
+      { name: 'Status', description: 'API status and Statistics' },
+      { name: 'User Authentication', description: 'User registration, login, and authentication'},
+      {name: 'Receipts Management', description: 'Endpoints for managing receipts' },
+    ],
   },
   apis: ['./src/api/routes/*.js'],
 };

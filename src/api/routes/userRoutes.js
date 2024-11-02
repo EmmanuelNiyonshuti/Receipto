@@ -15,6 +15,8 @@ const router = express.Router();
  *   post:
  *     summary: Register a new user
  *     description: Creates a new user with the specified username, email, and password.
+ *     tags:
+ *        - User Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -69,7 +71,7 @@ const router = express.Router();
  *                 error:
  *                   type: string
  *                   example: "Internal server error occurred"
- */
+*/
 router.post('/register', validateUser, AuthController.createUser);
 /**
  * @swagger
@@ -77,6 +79,8 @@ router.post('/register', validateUser, AuthController.createUser);
  *   post:
  *     summary: Log in a user
  *     description: Authenticates a user and returns a JWT token.
+ *     tags:
+ *        - User Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -133,7 +137,7 @@ router.post('/register', validateUser, AuthController.createUser);
  *                 error:
  *                   type: string
  *                   example: "User not found"
- */
+*/
 router.post('/login', AuthController.userLogin);
 /**
  * @swagger
@@ -141,6 +145,8 @@ router.post('/login', AuthController.userLogin);
  *   get:
  *     summary: Retrieve user profile
  *     description: Fetches the profile information of the authenticated use
+ *     tags:
+ *        - User Authentication
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -194,7 +200,7 @@ router.post('/login', AuthController.userLogin);
  *                 error:
  *                   type: string
  *                   example: "Internal server error occurred"
- */
+*/
 router.get('/profile', authUser, UserController.getUser);
 
 /**
@@ -203,6 +209,8 @@ router.get('/profile', authUser, UserController.getUser);
  *   put:
  *     summary: Update user
  *     description: Update the details of an authenticated user.
+ *     tags:
+ *        - User Authentication
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -254,7 +262,7 @@ router.get('/profile', authUser, UserController.getUser);
  *         description: Unauthorized, user not authenticated
  *       500:
  *         description: Internal server error
- */
+*/
 router.put('/', authUser, UserController.updateUser);
 
 /**
@@ -263,6 +271,8 @@ router.put('/', authUser, UserController.updateUser);
  *   delete:
  *     summary: Delete user
  *     description: Delete the authenticated user's account.
+ *     tags:
+ *        - User Authentication
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -282,7 +292,8 @@ router.put('/', authUser, UserController.updateUser);
  *         description: Not found, user does not exist
  *       500:
  *         description: Internal server error
- */
+*/
 router.delete('/', authUser, UserController.deleteUser);
 
 export default router;
+

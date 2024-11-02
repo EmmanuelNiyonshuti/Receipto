@@ -1,11 +1,10 @@
 /**
  * @desc define and documents receipts endpoints
- */
+*/
 import express from 'express';
 import { ReceiptsController } from '../controllers/receiptsController.js';
 import { upload } from '../middleware/receiptsUpload.js';
 import { authUser } from '../middleware/auth.js';
-
 
 const router = express.Router();
 
@@ -15,6 +14,8 @@ const router = express.Router();
  *   post:
  *     summary: Upload a new receipt
  *     description: Uploads a receipt file along with its category for the authenticated user.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -85,6 +86,8 @@ router.post('/', authUser, upload.any(), ReceiptsController.createReceipt);
  *   get:
  *     summary: Retrieve all receipts for the authenticated user
  *     description: Fetches a list of receipts associated with the authenticated user.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -145,6 +148,8 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *   get:
  *     summary: Retrieve receipts by category for the authenticated user
  *     description: Fetches a list of receipts for the authenticated user filtered by the specified category.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -223,6 +228,8 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *   get:
  *     summary: Retrieve a single receipt by ID for the authenticated user
  *     description: Fetches a single receipt for the authenticated user based on the provided receipt ID. If found, the receipt file is streamed back in the response.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -279,6 +286,8 @@ router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
  *   put:
  *     summary: Update a receipt by ID for the authenticated user
  *     description: Updates the specified receipt for the authenticated user with the provided data.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -371,6 +380,8 @@ router.put('/:id', authUser, ReceiptsController.updateReceipt);
  *   delete:
  *     summary: Delete a receipt by ID for the authenticated user
  *     description: Deletes a specified receipt for the authenticated user by receipt ID.
+ *     tags:
+ *         - Receipts Management
  *     security:
  *       - bearerAuth: []
  *     parameters:
