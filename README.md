@@ -154,7 +154,7 @@ Receipto/
 ├── docs/                     # Swagger documentation setup and config files
 ├── README.md                 # Main project documentation
 └── server.js                 # Sets up and starts the Express server
-
+```
 ---
 
 ## Future Enhancements
