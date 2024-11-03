@@ -23,10 +23,7 @@ const swaggerDocs = swaggerJSDoc({
     swaggerDefinition: {
       ...swaggerDocument.swaggerDefinition,
       servers: [
-        {
-          url: '/',
-          description: 'Development Server'
-        }
+          { url: '/', description: 'Development Server' }
       ]
     }
   });
@@ -42,10 +39,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOpti
     
 app.use(logger);
 app.use(JsonErrorHandler);
+app.use(express.json());
 app.use(multerError);
 
 app.use('/api', router);
-
 app.use(notFound);
 app.use(errorHandler);
 

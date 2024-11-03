@@ -181,7 +181,7 @@ router.post('/login', AuthController.userLogin);
  *                   type: string
  *                   example: "Unauthorized"
  *       404:
- *         description: Not Found (User profile not found)
+ *         description: Not Found (User not found)
  *         content:
  *           application/json:
  *             schema:
@@ -189,7 +189,7 @@ router.post('/login', AuthController.userLogin);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "User profile not found"
+ *                   example: "User not found"
  *       500:
  *         description: Internal Server Error
  *         content:
@@ -210,7 +210,7 @@ router.get('/profile', authUser, UserController.getUser);
  *     summary: Update user
  *     description: Update the details of an authenticated user.
  *     tags:
- *        - User Authentication
+ *       - User Authentication
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -258,11 +258,21 @@ router.get('/profile', authUser, UserController.getUser);
  *                       example: "john.doe@example.com"
  *       400:
  *         description: Bad request, invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing user info to be updated"
  *       401:
  *         description: Unauthorized, user not authenticated
+ *       404:
+ *         description: Not found, user does not exist
  *       500:
  *         description: Internal server error
-*/
+ */
 router.put('/', authUser, UserController.updateUser);
 
 /**
@@ -284,8 +294,8 @@ router.put('/', authUser, UserController.updateUser);
  *               type: object
  *               properties:
  *                 message:
- *                   type: string
- *                   example: "User deleted successfully"
+ *                   type: object
+ *                   example: "{}"
  *       401:
  *         description: Unauthorized, user not authenticated
  *       404:

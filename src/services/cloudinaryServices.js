@@ -1,3 +1,6 @@
+/**
+ * @desc uploads image buffer to cloudinary
+ */
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({

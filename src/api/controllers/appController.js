@@ -5,7 +5,7 @@ import dbClient from "../../utils/db.js";
 class AppController {
     static getStatus(req, res, next){
         if (dbClient.isAlive()){
-            return res.status(200).json({ msg: 'Ok' });
+            return res.status(200).json({ status: 'Ok' });
         }
         const error = new Error('something went wrong');
         error.status = 500;

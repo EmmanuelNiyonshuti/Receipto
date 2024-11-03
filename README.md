@@ -2,7 +2,7 @@
 
 ## Online Receipt Management Backend RESTful API
 
-**Receipto** is a backend application designed to simplify the storage, categorization, and management of digital receipts. This API provides secure, scalable, and flexible options for uploading, categorizing, and retrieving receipts, with metadata extraction capabilities powered by **Tesseract.js** for OCR (optical character recognition). 
+**Receipto** is a backend application designed to simplify the storage, categorization, and management of digital receipts. This API provides secure, scalable, and flexible options for uploading, categorizing, and retrieving receipts, with metadata extraction capabilities powered by **Tesseract.js** for OCR (optical character recognition).
 
 ---
 
@@ -16,10 +16,24 @@
   - [Database Setup](#database-setup)
   - [Running the Server](#running-the-server)
 - [API Documentation](#api-documentation)
+- [Example Endpoints](#example-endpoints)
 - [Folder Structure](#folder-structure)
 - [Future Enhancements](#future-enhancements)
 - [Contributing](#contributing)
 - [License](#license)
+
+---
+
+## Features
+
+- **User Authentication**: Secure JWT-based authentication for users.
+- **File Uploads**: Handles receipt uploads with metadata for easy categorization.
+- **OCR Extraction**: Extracts text from receipts using Tesseract.js for easy search and retrieval.
+- **Receipt Categorization**: Organizes receipts by categories, making them easier to manage.
+- **Database Storage**: Stores receipt data in MongoDB for scalable storage.
+- **RESTful API**: Well-documented endpoints for integration with frontend or other services.
+
+---
 
 ## Tech Stack
 
@@ -28,7 +42,7 @@
 - **Authentication**: JSON Web Tokens (JWT)
 - **File Upload**: Multer for handling multipart/form-data
 - **OCR**: Tesseract.js for text extraction from receipts
-- **Documentation**: Swaagger for API documentation
+- **Documentation**: Swagger for API documentation
 
 ---
 
@@ -38,60 +52,129 @@ Follow these instructions to get a copy of the project running locally.
 
 ### Installation
 
-1.    Clone the repository
+1. Clone the repository:
+
    ```bash
-   git clone https://github.com/your-username/receipto.git
-   cd receipto
-    ```
-    
-2.  Install dependencies
-    ```bash
-    npm install
-    ```
+   git clone git@github.com:EmmanuelNiyonshuti/Receipto.git
+   cd Receipto
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
 ### Environment Variables
 
-Create **.env** file in the root directory and add the following variables.
+Create a **.env** file in the root directory and add the following variables:
 
 ```bash
-PORT =5000
+# Application
+PORT=5000  # Optional; defaults to 3000 if not set
+
+# MongoDB
 MONGODB_URI=your_mongodb_connection_string
+
+# JWTs
 JWT_SECRET=your_jwt_secret_key
+
+# Cloudinary Storage
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_SECRET_KEY=your_cloudinary_secret_key
 ```
 
-### Database SetUp
-This project uses MongoDB for data storage. Set up a local MongoDB instance or create a free cluster on [MongoDB Atlas](#https://www.mongodb.com/atlas/database) and use its connection string in your .env file.
+### Database Setup
 
-### Running the server
-To start the server, use:
-    ```bash
-    npm run dev
-    ```
-    This command will run the server in development mode
-    ***http://localhost:3000***
+This project uses MongoDB for data storage. Set up a local MongoDB instance or create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas/database) and use its connection string in your **.env** file.
+
+### Running the Server
+
+To start the server in development mode, use:
+
+```bash
+npm run dev
+```
+
+The server should be running at [http://localhost:3000](http://localhost:3000).
+
+---
 
 ## API Documentation
+
 API documentation is available through Swagger. After starting the server, visit:
-    ```bash
-    http://localhost:3000/api-docs
-    Here you can explore available endpoints, test functionality, and see example responses.
-    ```
+
+```plaintext
+http://localhost:3000/api-docs
+```
+
+This documentation provides details about available endpoints, example responses, and request parameters.
+
+---
 
 ## Example Endpoints
 
+All endpoints are prefixed with `/api`.
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+### General
 
+- `GET /status`: Check if the API is up and running.
+- `GET /stats`: Get basic stats about the API.
 
+### User Authentication Endpoints
+
+- `POST /users/register`: Register a new user.
+- `POST /users/login`: Log in an existing user.
+- `GET /users/profile`: Retrieve profile information of the authenticated user.
+- `PUT /users`: Update user profile (authenticated).
+- `DELETE /users`: Delete user account (authenticated).
+
+### Receipt Management Endpoints
+
+- `POST /receipts`: Upload a new receipt.
+- `GET /receipts`: Retrieve all receipts for the authenticated user.
+- `GET /receipts/:id`: Retrieve a specific receipt by its ID.
+- `GET /receipts/category/:category`: Retrieve receipts by category.
+
+---
+
+## Folder Structure
+
+```plaintext
+Receipto/src/api/
+                ├── controllers/            # Request handlers for routes
+                ├── middlewares/         # Middleware functions (e.g., authUser)
+                ├── routes/              # API route definitions
+                ├── services/            # Services for file uploads, OCR, etc.
+                ├── utils/               # Utility functions and database connection
+├── .env        # Example of environment variables
+├── docs/         # Swagger documentation configuration
+├── README.md            # Project documentation
+└── server.js               # Express app setup
+```
+
+---
+
+## Future Enhancements
+- **Improved OCR**: Leverage more advanced OCR techniques for better accuracy and implement easy search and retrieval.
+- **Analytics**: Provide insights into spending patterns by analyzing receipts.
+- **User Dashboard**: Create a dashboard where users can visually interact with their receipts.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -m "Add feature"`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a new Pull Request.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -1,4 +1,6 @@
-// receipts storage configuration middleware
+/**
+ * @desc receipts storage configuration middleware
+ */
 import multer from 'multer';
 
 const storage = multer.memoryStorage();

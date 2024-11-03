@@ -7,7 +7,7 @@ export const authUser = async (req, res, next) => {
     try{
         const authHeader = req.headers.authorization;
         if (!authHeader){
-            const error = new Error(' WWW-Authenticate: Bearer');
+            const error = new Error('WWW-Authenticate: Bearer');
             error.status = 401;
             return next(error);
         }
@@ -20,6 +20,9 @@ export const authUser = async (req, res, next) => {
         const decoded = verifyAccessToken(token);
         const userEmail = decoded.email;
         const user = await dbClient.findUserByEmail(userEmail);
+        if (!user){
+            return res.status(404).json({error: 'User not found'});
+        }
         req.user = user;
         next();
     }catch(error){

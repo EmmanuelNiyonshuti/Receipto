@@ -1,4 +1,6 @@
-// @desc Establishes connection to MongoDB and provides utility functions for database operations
+/**
+* @desc Establishes connection to MongoDB and provides utility functions for database operations
+*/
 import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
 import { extractTextFromReceipt } from '../services/tesseractService.js';
@@ -58,15 +60,15 @@ class DBClient {
             return { 'error': error };
         }
     }
-    async updateUser(user, data){
+    async updateUser(user, body){
         if (!this.isAlive()) return;
         try{
             const updatedAt = { updatedAt: new Date().toISOString() };
-            const data = {...data, ...updatedAt};
+            const  data = {...body, ...updatedAt};
             const updatedUser = await this.db.collection('users').findOneAndUpdate(
-                {_id: ObjectId.createFromHexString(user._id)},
+                {_id: new ObjectId(user._id)},
                 { $set: data},
-                { ReturnDocument: 'after' }
+                { returnDocument: 'after' }
             );
             return updatedUser;
         }catch(error){
@@ -76,32 +78,58 @@ class DBClient {
     async deleteUser(user){
         if (!this.isAlive()) return;
         try{
-            await this.db.collection('users').deleteOne({ _id: ObjectId.createFromHexString(user._id) });
+            await this.db.collection('category').deleteMany(
+                {userId: new ObjectId(user._id)}
+            );
+            await this.db.collection('receipts').deleteMany(
+                {userId: new ObjectId(user._id)}
+            );
+            await this.db.collection('users').deleteOne({ _id: new ObjectId(user._id) });
         }catch(error){
             return {'error': error};
         }
     }
-    async createReceipt(user, receiptCategory, file, newFile){
-        if (!this.isAlive()) return;
-        try{
+    async createReceipt(user, receiptCategory, file, newFile) {
+        try {
             const extractedText = await extractTextFromReceipt(file.buffer);
+            if (!receiptCategory && extractedText.billType) {
+                receiptCategory = extractedText.billType.toLowerCase();
+            }
+            let category = await this.db.collection('category').findOne({
+                name: receiptCategory,
+                userId: new ObjectId(user._id)
+            });
+
+            if (!category) {
+                const newCategoryResult = await this.db.collection('category').insertOne({
+                    name: receiptCategory,
+                    userId: new ObjectId(user._id),
+                    receiptIds: []
+                });
+                category = await this.db.collection('category').findOne({ _id: newCategoryResult.insertedId });
+            }
             const newReceipt = await this.db.collection('receipts').insertOne({
-                userId: user._id,
-                folder: newFile.asset_folder || 'Receipts',
-                format: newFile.format,
-                category: receiptCategory,
-                fileUrl: newFile.secure_url,
-                fileName: newFile.secure_url.split('/').pop(),
+                userId: new ObjectId(user._id),
+                categoryId: category._id,
+                transactionDate: extractedText.date || new Date().toISOString(),
                 metadata: {
-                    size: file.size,
                     type: file.mimetype,
-                    created_at: newFile.created_at || new Date().toISOString(),
+                    folder: newFile.asset_folder || 'Receipts',
+                    format: newFile.format,
+                    fileUrl: newFile.secure_url,
+                    fileName: newFile.secure_url.split('/').pop(),
+                    size: file.size,
                     extractedText: extractedText
                 }
             });
+            await this.db.collection('category').findOneAndUpdate(
+                { _id: category._id },
+                { $addToSet: { receiptIds: newReceipt.insertedId } }
+            );
+    
             return newReceipt;
-        }catch(error){
-            return {'error': error.message };
+        } catch (error) {
+            return { error: error.message };
         }
     }
     async allReceipts() {
@@ -119,25 +147,12 @@ class DBClient {
         const userReceipts = await this.findUserReceipts(user);
         return userReceipts.filter(receipt => receipt._id == receiptId);
     }
-    async findReceiptByCategory(user, category){
+    async findReceiptByCategory(categoryId){
         if (!this.isAlive()) return;
-        const receipt = await this.db.collection('receipts').find({ userId: user._id, category: category }).toArray();
-        return receipt;
-    }
-    async updateReceipt(user, receiptId, updateData){
-        if (!this.isAlive()) return;
-        try{
-            const updatedAt = {updatedAt: new Date().toISOString()};
-            const updatedData = { ...updateData, ...updatedAt };
-            const updated = await this.db.collection('receipts').findOneAndUpdate(
-                { _id: ObjectId.createFromHexString(receiptId), userId: user._id },
-                { $set: updatedData },
-                { ReturnDocument: 'after' }
-            );
-            return updated;
-        }catch(error) {
-            return { 'error': error.message };
-        }
+        const receipts = await this.db.collection('receipts').find(
+            { categoryId: categoryId }
+        ).toArray();
+        return receipts;
     }
     async deleteReceipt(receiptId) {
         if (!this.isAlive()) return;

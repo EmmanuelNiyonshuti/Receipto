@@ -1,3 +1,6 @@
+/**
+ * @desc generate and verify jwt
+ */
 import jwt from 'jsonwebtoken';
 
 export const generateAccessToken = (user, email) => {

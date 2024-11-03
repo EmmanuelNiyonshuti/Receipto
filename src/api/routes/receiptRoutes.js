@@ -144,7 +144,7 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
 
 /**
  * @swagger
- * /api/receipts/category/{category}:
+ * /api/receipts/{category}:
  *   get:
  *     summary: Retrieve receipts by category for the authenticated user
  *     description: Fetches a list of receipts for the authenticated user filtered by the specified category.
@@ -154,7 +154,7 @@ router.get('/', authUser, ReceiptsController.getUserReceipts);
  *       - bearerAuth: []
  *     parameters:
  *       - name: category
- *         in: path
+ *         in: query
  *         required: true
  *         description: The category of receipts to filter by.
  *         schema:
@@ -280,99 +280,6 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *                   example: "Error downloading file: <error message>"
  */
 router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
-/**
- * @swagger
- * /api/receipts/{id}:
- *   put:
- *     summary: Update a receipt by ID for the authenticated user
- *     description: Updates the specified receipt for the authenticated user with the provided data.
- *     tags:
- *         - Receipts Management
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: The ID of the receipt to update
- *         schema:
- *           type: string
- *           example: "60c72b2f4f1a4b001c8d4c60"
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               category:
- *                 type: string
- *                 example: "Groceries"
- *               metadata:
- *                 type: object
- *                 additionalProperties: true
- *                 example: { "total": 50, "currency": "USD" }
- *               fileName:
- *                 type: string
- *                 example: "receipt.pdf"
- *     responses:
- *       200:
- *         description: Receipt updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 msg:
- *                   type: string
- *                   example: "Receipt updated successfully"
- *                 updatedReceipt:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "60c72b2f4f1a4b001c8d4c60"
- *                     category:
- *                       type: string
- *                       example: "Groceries"
- *                     metadata:
- *                       type: object
- *                       additionalProperties: true
- *                     fileName:
- *                       type: string
- *                       example: "receipt.png"
- *       404:
- *         description: Receipt not found for the specified ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Receipt with ID 60c72b2f4f1a4b001c8d4c60 not found."
- *       401:
- *         description: Unauthorized (User is not authenticated)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Unauthorized"
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to update receipt, <error message>"
- */
-router.put('/:id', authUser, ReceiptsController.updateReceipt);
 
 /**
  * @swagger

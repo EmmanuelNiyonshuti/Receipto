@@ -4,23 +4,20 @@
 import { createWorker } from 'tesseract.js';
 import sharp from 'sharp';
 
-
 const fieldPatterns = {
-    tin: /TIN:?\s*([0-9]{9})/i,
-    period: /Period:?\s*([A-Za-z0-9\s/-]+)/i,
-    poc: /POC:?\s*([0-9]+)/i,
-    billType: /(Water|Electricity|Gas)\s*bill/i,
-    name: /Name:?\s*([A-Za-z\s]+)/i,
-    amount: /Amount:?\s*\$?\s*([0-9]+\.?[0-9]*)/i
+    name: /(?:BILL TO|Name|Customer):?\s*([A-Za-z\s]+)/i,
+    billType: /\b(Receipt|Invoice|Bill|Payment|Sales Receipt|Cash Receipt|Purchase)\b/i,
+    date: /(?:RECEIPT DATE|Date|DATE):?\s*([\d]{2}[\/\.-][\d]{2}[\/\.-][\d]{2,4})/i,
+    storeName: /([A-Za-z\s]+? (?:Grocers|Shop|Store|Market|Mart|Café|Restaurant|Slip|Hilto))/i,
+    amount: /(?:TOTAL|Amount|AMT):?\s*[$₣RWF]*\s*([0-9,]+(?:\.[0-9]+)?)/i
 }
 
 const extractMetadata = (text) => {
     const extractedData = {
-        tin: null,
-        period: null,
-        poc: null,
-        billtype: null,
         name: null,
+        billType: null,
+        date: null,
+        storeName: null,
         amount: null
     };
     for (const [key, pattern] of Object.entries(fieldPatterns)){
@@ -51,7 +48,7 @@ const preprocessImage = async imageBuffer => {
 }
 export async function extractTextFromReceipt(imageBuffer) {
     try{
-        const processedBuffer = await preprocessImage(imageBuffer);
+        // const processedBuffer = await preprocessImage(imageBuffer);
         const worker = await createWorker({
             logger: (m) => {
                 if (process.env.NODE_ENV === 'development'){
@@ -64,13 +61,15 @@ export async function extractTextFromReceipt(imageBuffer) {
 
         await worker.setParameters({
             tessedit_pageseg_mode: '3',
-            tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%$.,-: ',
+            // tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%$.,-: ',
             tessedit_ocr_engine_mode: '1',
-            preserve_interword_spaces: '1',
+            preserve_interword_spaces: '1'
         });
-        const { data: { text } } = await worker.recognize(processedBuffer);
+        const { data: { text } } = await worker.recognize(imageBuffer);
         await worker.terminate();
+        console.log('Extracted texts:', text);
         const data = extractMetadata(text);
+        console.log('filtered fields:', data);
         return data; 
     }catch(error){
         console.error('Error during ocr processing', error);

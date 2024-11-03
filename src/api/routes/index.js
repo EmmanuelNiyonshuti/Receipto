@@ -26,7 +26,7 @@ const router = express.Router();
  *               properties:
  *                 status:
  *                   type: string
- *                   example: "running"
+ *                   example: "Ok"
  */
 router.get('/status', AppController.getStatus);
 /**
@@ -45,9 +45,12 @@ router.get('/status', AppController.getStatus);
  *             schema:
  *               type: object
  *               properties:
- *                  userCount:
+ *                  users:
  *                      type: integer
- *                      example: 50
+ *                      example: 5
+ *                  receipts:
+ *                          type: integer
+ *                          example: 10
  *       500:
  *         description: Internal Server Error
  *         content:
