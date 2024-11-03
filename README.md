@@ -142,17 +142,18 @@ All endpoints are prefixed with `/api`.
 ## Folder Structure
 
 ```plaintext
-Receipto/src/api/
-                ├── controllers/            # Request handlers for routes
-                ├── middlewares/         # Middleware functions (e.g., authUser)
-                ├── routes/              # API route definitions
-                ├── services/            # Services for file uploads, OCR, etc.
-                ├── utils/               # Utility functions and database connection
-├── .env        # Example of environment variables
-├── docs/         # Swagger documentation configuration
-├── README.md            # Project documentation
-└── server.js               # Express app setup
-```
+Receipto/
+├── src/
+│   ├── api/
+│   │   ├── controllers/      # Handles requests and responses for each endpoint
+│   │   ├── middlewares/      # Middleware functions (e.g., authUser for authentication)
+│   │   ├── routes/           # Defines API routes and links them to controllers
+│   │   ├── services/         # Business logic for handling tasks like file uploads, OCR, etc.
+│   │   ├── utils/            # Helper functions and database connection logic
+├── .env                      # Environment variables configuration
+├── docs/                     # Swagger documentation setup and config files
+├── README.md                 # Main project documentation
+└── server.js                 # Sets up and starts the Express server
 
 ---
 
