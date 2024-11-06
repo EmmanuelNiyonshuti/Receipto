@@ -11,44 +11,45 @@ export class ReceiptsController {
     static async createReceipt(req, res) {
         try{
             const user = req.user;
-            const receiptCategory = req.query.category;
-            if (!req.files || req.files.length === 0)
+            if (!req.files || req.files.length === 0){
                 return res.status(400).json({ error: 'No file uploaded' });
+            }
             const file = req.files[0];
             const newFile = await uploadReceiptToCloudinary(file.buffer);
             if (!newFile || !newFile.url) {
                 return res.status(500).json({error: 'Failed to upload to cloudinary'});
             }
+            const receiptCategory = req.query.category;
             const newReceipt = await dbClient.createReceipt(user, receiptCategory, file, newFile);
             return res.status(201).json({
                 msg: 'uploaded successfully',
                 id: newReceipt.insertedId,
-                url: newFile.url
+                url: newFile.url,
+                transactionDate: newReceipt.transactionDate
             });
         }catch(error){
             return res.status(500).json({ msg: `Failed to upload the receipt, ${error.message}`});
         }
     }
-    static async getUserReceipts(req, res){
+    static async getReceipts(req, res){
         const user = req.user;
         const userReceipts = await dbClient.findUserReceipts(user);
+        console.log(userReceipts);
         return res.status(200).json(userReceipts.map(receipt => ({
+            categoryId: receipt.categoryId,
             id: receipt._id,
+            type: receipt.metadata.type,
             url: receipt.fileUrl,
-            category: receipt.category,
-            format: receipt.format,
-            createdAt: receipt.metadata?.created_at,
-            size: receipt.metadata?.size
+            transactionDate: receipt.transactionDate
         })));
     }
-    static async getSingleReceipt(req, res){
+    static async getReceipt(req, res){
         const user = req.user;
         const receiptId = req.params.id;
         const receipt = await dbClient.db.collection('receipts').findOne(
-            {_id: ObjectId.createFromHexString(receiptId) }
+            {_id: new ObjectId(receiptId) }
         )
-        console.log(receipt);
-        if (!receipt || receipt.length === 0)
+        if (!receipt)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
         const filePath = receipt.metadata.fileUrl;
         try{
@@ -72,19 +73,18 @@ export class ReceiptsController {
                 name: categoryName
             });
             if (!category){
-                return res.status(404).json({ error: `receipt with ${categoryName} category not found`});
+                return res.status(404).json({ error: `${categoryName} category not found`});
             }
             const receipts = await dbClient.findReceiptByCategory(category._id);
             if (!receipts || receipts.length == 0)
-                return res.status(404).json({ error: `no receipt found for ${categoryName} category`});
+                return res.status(404).json({ error: `no receipts found in ${categoryName} category`});
             return res.status(200).json({
                 message: `found ${receipts.length} receipts in ${category.name} category.`,
                 receipt: receipts.map(receipt => ({
                     id: receipt._id,
                     type: receipt.metadata.type,
-                    size: receipt.metadata.size,
                     url: receipt.fileUrl,
-                    uploadDate: receipt.updatedAt || receipt.metadata.createdAt,
+                    transactionDate: receipt.transactionDate
                 }))
             });
         }catch(error){
@@ -94,15 +94,15 @@ export class ReceiptsController {
     static async deleteReceipt(req, res){
         const user = req.user;
         const receiptId = req.params.id;
-        const receipt = await dbClient.findUserReceipt(user, receiptId);
-        if (!receipt || receipt.length === 0)
+        const receipt = await dbClient.findUserReceipt(receiptId);
+        if (!receipt)
             return res.status(404).json({ error: `receipt with id ${receiptId} is not found`});
         try{
-            await dbClient.deleteReceipt(receiptId);
             await dbClient.db.collection('category').updateOne(
                 { _id: receipt.categoryId },
-                { $pull: { receiptIds: ObjectId.createFromHexString(receiptId) } }
+                { $pull: { receiptIds: new ObjectId(receiptId) } }
             );
+            await dbClient.deleteReceipt(receiptId);
             return res.status(200).json({});
         }catch(error){
             return res.status(500).json({ error: `Error deleting receipt with id ${receiptId}, ${error}`});

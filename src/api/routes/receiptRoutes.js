@@ -140,7 +140,7 @@ router.post('/', authUser, upload.any(), ReceiptsController.createReceipt);
  *                   type: string
  *                   example: "An error occurred while retrieving receipts"
  */
-router.get('/', authUser, ReceiptsController.getUserReceipts);
+router.get('/', authUser, ReceiptsController.getReceipts);
 
 /**
  * @swagger
@@ -279,7 +279,7 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *                   type: string
  *                   example: "Error downloading file: <error message>"
  */
-router.get('/:id', authUser, ReceiptsController.getSingleReceipt);
+router.get('/:id', authUser, ReceiptsController.getReceipt);
 
 /**
  * @swagger

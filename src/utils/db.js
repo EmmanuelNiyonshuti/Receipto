@@ -99,17 +99,16 @@ class DBClient {
                 name: receiptCategory,
                 userId: new ObjectId(user._id)
             });
-
             if (!category) {
                 const newCategoryResult = await this.db.collection('category').insertOne({
                     name: receiptCategory,
-                    userId: new ObjectId(user._id),
+                    userId: user._id,
                     receiptIds: []
                 });
                 category = await this.db.collection('category').findOne({ _id: newCategoryResult.insertedId });
             }
             const newReceipt = await this.db.collection('receipts').insertOne({
-                userId: new ObjectId(user._id),
+                userId: user._id,
                 categoryId: category._id,
                 transactionDate: extractedText.date || new Date().toISOString(),
                 metadata: {
@@ -123,10 +122,9 @@ class DBClient {
                 }
             });
             await this.db.collection('category').findOneAndUpdate(
-                { _id: category._id },
+                { _id: new ObjectId(category._id) },
                 { $addToSet: { receiptIds: newReceipt.insertedId } }
             );
-    
             return newReceipt;
         } catch (error) {
             return { error: error.message };
@@ -139,27 +137,27 @@ class DBClient {
     }
     async findUserReceipts(user){
         if (!this.isAlive()) return;
-        const receipts = await this.allReceipts();
-        return receipts.filter(receipt => receipt.userId == user._id.toString());
-    }
-    async findUserReceipt(user, receiptId) {
-        if (!this.isAlive()) return;
-        const userReceipts = await this.findUserReceipts(user);
-        return userReceipts.filter(receipt => receipt._id == receiptId);
+        const receipts = await this.db.collection('receipts').find({ userId: new ObjectId(user._id)}).toArray();
+        return receipts;
     }
     async findReceiptByCategory(categoryId){
         if (!this.isAlive()) return;
         const receipts = await this.db.collection('receipts').find(
-            { categoryId: categoryId }
+            { categoryId: new ObjectId(categoryId) }
         ).toArray();
         return receipts;
+    }
+    async findUserReceipt(receiptId) {
+        if (!this.isAlive()) return;
+        const userReceipt = await this.db.collection('receipts').findOne({_id: new ObjectId(receiptId)});
+        return userReceipt;
     }
     async deleteReceipt(receiptId) {
         if (!this.isAlive()) return;
         try{
-            await this.db.collection('receipts').deleteOne({ _id: ObjectId.createFromHexString(receiptId) });
+            await this.db.collection('receipts').deleteOne({ _id: new ObjectId(receiptId) });
         }catch(error){
-            return {'error': error};
+            return {'error': error.message};
         }
     }
 }
