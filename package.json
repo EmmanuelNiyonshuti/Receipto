@@ -5,11 +5,11 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server",
+    "start": "babel-node --watch --env-file=.env server.js",
     "dev": "node --watch --env-file=.env server"
   },
   "keywords": [],
-  "author": "",
+  "author": "Emmanuel Niyonshuti",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.7",
@@ -26,5 +26,10 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "tesseract.js": "^4.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/node": "^7.26.0",
+    "@babel/preset-env": "^7.26.0"
   }
 }
