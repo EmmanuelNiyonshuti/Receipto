@@ -10,6 +10,7 @@ import { generateAccessToken } from '../../utils/jwt.js'
 class AuthController {
     static async createUser(req, res, next) {
         const { username, email, password } = req.body;
+        if (password.length < 5) return res.status(400).json({error: 'please use a strong password'});
         const errors = validationResult(req);
         if (!errors.isEmpty()){
             const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);
@@ -24,9 +25,13 @@ class AuthController {
                 return next(error);
             }
             return res.status(201).json({ 
-                id: newUser._id,
-                username,
-                email
+                message: "User created successfully. Please log in to continue.",
+                "user":
+                {
+                    id: newUser._id,
+                    username,
+                    email
+                }
             });
         }catch(error){
             const err = new Error(error.toString());
