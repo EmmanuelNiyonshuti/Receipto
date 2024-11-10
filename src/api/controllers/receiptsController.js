@@ -34,7 +34,6 @@ export class ReceiptsController {
     static async getReceipts(req, res){
         const user = req.user;
         const userReceipts = await dbClient.findUserReceipts(user);
-        console.log(userReceipts);
         return res.status(200).json(userReceipts.map(receipt => ({
             categoryId: receipt.categoryId,
             id: receipt._id,
