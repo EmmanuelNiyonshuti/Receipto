@@ -71,6 +71,7 @@ Create a **.env** file in the root directory and add the following variables:
 
 ```bash
 # Application
+NODE_ENV=development # optional, for logging OCR progress
 PORT=5000  # Optional; defaults to 3000 if not set
 
 # MongoDB
