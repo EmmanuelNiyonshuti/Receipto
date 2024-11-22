@@ -273,7 +273,6 @@ router.get('/profile', authUser, UserController.getUser);
  *       500:
  *         description: Internal server error
  */
-router.put('/', authUser, UserController.updateUser);
 
 /**
  * @swagger
@@ -303,7 +302,10 @@ router.put('/', authUser, UserController.updateUser);
  *       500:
  *         description: Internal server error
 */
-router.delete('/', authUser, UserController.deleteUser);
+router
+    .route('/')
+    .put(authUser, UserController.updateUser)
+    .delete(authUser, UserController.deleteUser);
 
 export default router;
 

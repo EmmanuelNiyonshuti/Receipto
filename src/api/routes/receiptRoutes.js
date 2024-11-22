@@ -78,7 +78,7 @@ const router = express.Router();
  *                   type: string
  *                   example: "Failed to upload the receipt, <error_message>"
  */
-router.post('/', authUser, upload.any(), ReceiptsController.createReceipt);
+
 
 /**
  * @swagger
@@ -140,8 +140,10 @@ router.post('/', authUser, upload.any(), ReceiptsController.createReceipt);
  *                   type: string
  *                   example: "An error occurred while retrieving receipts"
  */
-router.get('/', authUser, ReceiptsController.getReceipts);
-
+router
+    .route('/')
+    .post(authUser, upload.any(), ReceiptsController.createReceipt)
+    .get(authUser, ReceiptsController.getReceipts)
 /**
  * @swagger
  * /api/receipts/{category}:
@@ -279,7 +281,7 @@ router.get('/category/:category', authUser, ReceiptsController.getReceiptByCateg
  *                   type: string
  *                   example: "Error downloading file: <error message>"
  */
-router.get('/:id', authUser, ReceiptsController.getReceipt);
+
 
 /**
  * @swagger
@@ -341,6 +343,9 @@ router.get('/:id', authUser, ReceiptsController.getReceipt);
  *                   type: string
  *                   example: "Error deleting receipt with id 60c72b2f4f1a4b001c8d4c60, <error message>"
  */
-router.delete('/:id', authUser, ReceiptsController.deleteReceipt);
+router
+    .route('/:id')
+    .get(authUser, ReceiptsController.getReceipt)
+    .delete(authUser, ReceiptsController.deleteReceipt)
 
 export default router;
