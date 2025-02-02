@@ -1,5 +1,5 @@
 /**
- * @desc uploads image buffer to cloudinary
+ * @desc uploads file to cloudinary
  */
 import { v2 as cloudinary } from 'cloudinary';
 

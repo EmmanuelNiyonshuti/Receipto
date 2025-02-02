@@ -61,7 +61,7 @@ export async function extractTextFromReceipt(imageBuffer) {
 
         await worker.setParameters({
             tessedit_pageseg_mode: '3',
-            // tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%$.,-: ',
+            tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%$.,-: ',
             tessedit_ocr_engine_mode: '1',
             preserve_interword_spaces: '1'
         });

@@ -5,11 +5,7 @@ import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
 import { extractTextFromReceipt } from '../services/tesseractService.js';
 
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = process.env.DB_PORT;
-const DB_NAME = process.env.DB_NAME;
-
-const Url = `mongodb://${DB_HOST}:${DB_PORT}`;
+const Url = process.env.MONGODB_URI;
 
 class DBClient {
     constructor() {
@@ -21,7 +17,7 @@ class DBClient {
     async connect() {
         try{
             this.client = await MongoClient.connect(Url);
-            this.db = this.client.db(DB_NAME);
+            this.db = this.client.db('Receipto');
             this.connected = true;
         }catch(error){
             this.connected = false;

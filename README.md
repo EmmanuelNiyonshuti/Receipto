@@ -2,7 +2,7 @@
 
 ## Online Receipt Management Backend RESTful API
 
-**Receipto** is a backend application designed to simplify the storage, categorization, and management of digital receipts. This API provides secure, scalable, and flexible options for uploading, categorizing, and retrieving receipts, with metadata extraction capabilities powered by **Tesseract.js** for OCR (optical character recognition).
+**Receipto** is a backend RESTful API designed to simplify the storage, categorization, and management of physical receipts. This API provides secure, scalable, and flexible options for uploading, categorizing, and retrieving receipts, with metadata extraction capabilities powered by **Tesseract.js** for OCR (optical character recognition).
 
 ---
 
@@ -26,8 +26,8 @@
 
 ## Features
 
-- **User Authentication**: Secure JWT-based authentication for users.
-- **File Uploads**: Handles receipt uploads with metadata for easy categorization.
+- **User Authentication**: Secure JWT-based authentication.
+- **File Uploads**: Handles receipt uploads with metadata extraction for easy categorization.
 - **OCR Extraction**: Extracts text from receipts using Tesseract.js for easy search and retrieval.
 - **Receipt Categorization**: Organizes receipts by categories, making them easier to manage.
 - **Database Storage**: Stores receipt data in MongoDB for scalable storage.
@@ -48,7 +48,7 @@
 
 ## Getting Started
 
-Follow these instructions to get a copy of the project running locally.
+You can follow the instructions below to get a copy of the project running on your local machine.
 
 ### Installation
 
@@ -56,10 +56,13 @@ Follow these instructions to get a copy of the project running locally.
 
    ```bash
    git clone git@github.com:EmmanuelNiyonshuti/Receipto.git
+
+2. cd into the project directory
+   ```
    cd Receipto
    ```
 
-2. Install dependencies:
+3. Install dependencies:
 
    ```bash
    npm install
@@ -87,8 +90,9 @@ CLOUDINARY_SECRET_KEY=your_cloudinary_secret_key
 ```
 
 ### Database Setup
+   - This project uses MongoDB as the primary database. Instead of using an ODM like **Mongoose**, this project interacts directly with MongoDB via the **MongoDB Node.js Driver** for a lightweight and flexible approach.  
 
-This project uses MongoDB for data storage. Set up a local MongoDB instance or create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas/database) and use its connection string in your **.env** file.
+Set up a local MongoDB instance or create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas/database) and use its connection string in your **.env** file.
 
 ### Running the Server
 
@@ -98,13 +102,13 @@ To start the server in development mode, use:
 npm run dev
 ```
 
-The server should be running at [http://localhost:3000](http://localhost:3000).
+The server should be running on [http://localhost:3000](http://localhost:5000).
 
 ---
 
 ## API Documentation
 
-API documentation is available through Swagger. After starting the server, visit:
+API documentation is available with Swagger. After starting the server, visit:
 
 ```plaintext
 http://localhost:3000/api-docs
@@ -162,18 +166,6 @@ Receipto/
 - **Improved OCR**: Leverage more advanced OCR techniques for better accuracy and implement easy search and retrieval.
 - **Analytics**: Provide insights into spending patterns by analyzing receipts.
 - **User Dashboard**: Create a dashboard where users can visually interact with their receipts.
-
----
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -m "Add feature"`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Create a new Pull Request.
 
 ---
 

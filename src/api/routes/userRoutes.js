@@ -308,4 +308,3 @@ router
     .delete(authUser, UserController.deleteUser);
 
 export default router;
-

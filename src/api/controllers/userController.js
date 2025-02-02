@@ -20,6 +20,9 @@ class UserController{
         if (!data || Object.keys(data).length === 0) {
             return res.status(400).json({ error: 'Missing user info to be updated' });
         }
+        else if (!Object.keys(data).includes('username')){
+            return res.status(400).json('Missing username');
+        }
         try{
             const updatedUser = await dbClient.updateUser(user, data);
             if (!updatedUser) {
