@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-       "start": "node server.js",
-       "dev": "babel-node --watch server.js"
+    "start": "babel-node --watch --env-file=.env server.js",
+    "dev": "node --watch --env-file=.env server"
   },
   "keywords": [],
   "author": "Emmanuel Niyonshuti",

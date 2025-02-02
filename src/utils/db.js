@@ -19,8 +19,10 @@ class DBClient {
             this.client = await MongoClient.connect(Url);
             this.db = this.client.db('Receipto');
             this.connected = true;
+            console.log('Connected to MongoDB atlas');
         }catch(error){
             this.connected = false;
+            console.log('Connection to MongoDB atlas failed', error.message);
         }
     }
     isAlive(){
