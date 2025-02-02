@@ -23,7 +23,7 @@ const swaggerDocs = swaggerJSDoc({
     swaggerDefinition: {
       ...swaggerDocument.swaggerDefinition,
       servers: [
-          { url: '/', description: 'Development Server' }
+          { url: 'https://receipto.onrender.com', description: 'Production Server' }
       ]
     }
   });
