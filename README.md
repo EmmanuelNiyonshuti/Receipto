@@ -107,11 +107,12 @@ The server should be running on [http://localhost:3000](http://localhost:5000).
 ---
 
 ## API Documentation
+API documentation is available with Swagger.
+You can view the API documentation here: [API Documentation](https://receipto.onrender.com/api-docs/)
 
-API documentation is available with Swagger. After starting the server, visit:
-
+Or if you are running it locally, After starting the server, visit:
 ```plaintext
-http://localhost:3000/api-docs
+http://localhost:3000/api-docs # use the port number that your server is running on
 ```
 
 This documentation provides details about available endpoints, example responses, and request parameters.
