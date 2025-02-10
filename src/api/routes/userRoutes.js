@@ -72,7 +72,7 @@ const router = express.Router();
  *                   type: string
  *                   example: "Internal server error occurred"
 */
-router.post('/register', validateUser, AuthController.createUser);
+router.post('/register', validateUser, AuthController.register);
 /**
  * @swagger
  * /api/users/login:
@@ -138,7 +138,7 @@ router.post('/register', validateUser, AuthController.createUser);
  *                   type: string
  *                   example: "User not found"
 */
-router.post('/login', AuthController.userLogin);
+router.post('/login', AuthController.login);
 /**
  * @swagger
  * /api/users/profile:

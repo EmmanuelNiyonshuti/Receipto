@@ -5,7 +5,7 @@ import { MongoClient, ObjectId, ReturnDocument } from 'mongodb';
 import crypto from 'crypto';
 import { extractTextFromReceipt } from '../services/tesseractService.js';
 
-const Url = process.env.MONGODB_URI;
+const url = process.env.NODE_ENV === 'development' ? process.env.MONGODB_Dev_URI : process.env.MONGODB_Prod_URI;
 
 class DBClient {
     constructor() {
@@ -16,10 +16,10 @@ class DBClient {
     }
     async connect() {
         try{
-            this.client = await MongoClient.connect(Url);
+            this.client = await MongoClient.connect(url);
             this.db = this.client.db('Receipto');
             this.connected = true;
-            console.log('Connected to MongoDB atlas');
+            console.log(`Connected to ${url} database`);
         }catch(error){
             this.connected = false;
             console.log('Connection to MongoDB atlas failed', error.message);
@@ -131,11 +131,6 @@ class DBClient {
     async allReceipts() {
         if (!this.isAlive()) return;
         const receipts = await this.db.collection('receipts').find().toArray();
-        return receipts;
-    }
-    async findUserReceipts(user){
-        if (!this.isAlive()) return;
-        const receipts = await this.db.collection('receipts').find({ userId: new ObjectId(user._id)}).toArray();
         return receipts;
     }
     async findReceiptByCategory(categoryId){

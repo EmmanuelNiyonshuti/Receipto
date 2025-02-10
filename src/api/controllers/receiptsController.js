@@ -32,14 +32,23 @@ export class ReceiptsController {
         }
     }
     static async getReceipts(req, res){
+        // retrieve all receipts that belong to the user.
         const user = req.user;
-        const userReceipts = await dbClient.findUserReceipts(user);
-        return res.status(200).json(userReceipts.map(receipt => ({
+        const page = req.query.page || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (parseInt(page) - 1) * limit;
+        const receipts = await dbClient.db.collection('receipts')
+        .find({ userId: new ObjectId(user._id)})
+        // .sort({ createdAt: -1})
+        .skip(offset)
+        .limit(limit)
+        .toArray();
+        return res.status(200).json(receipts.map(receipt => ({
             categoryId: receipt.categoryId,
             id: receipt._id,
             type: receipt.metadata.type,
             url: receipt.fileUrl,
-            transactionDate: receipt.transactionDate
+            transactionDate: receipt.transactionDate,
         })));
     }
     static async getReceipt(req, res){

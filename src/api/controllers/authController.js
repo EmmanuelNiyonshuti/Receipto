@@ -8,7 +8,7 @@ import { validationResult } from 'express-validator';
 import { generateAccessToken } from '../../utils/jwt.js'
 
 class AuthController {
-    static async createUser(req, res, next) {
+    static async register(req, res, next) {
         const { username, email, password } = req.body;
         if (password.length < 5) return res.status(400).json({error: 'please use a strong password'});
         const errors = validationResult(req);
@@ -25,7 +25,7 @@ class AuthController {
                 return next(error);
             }
             return res.status(201).json({ 
-                message: "User created successfully. Please log in to continue.",
+                message: "User registered successfully.",
                 "user":
                 {
                     id: newUser._id,
@@ -39,7 +39,7 @@ class AuthController {
             return next(err);
         }
     }
-    static async userLogin(req, res, next){
+    static async login(req, res, next){
         const errors = validationResult(req);
         if (!errors.isEmpty()){
             const error = new Error(`${errors.array()[0].msg.split(' ')[0]} ${errors.array()[0].path}: ${errors.array()[0].value}`);
